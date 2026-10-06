@@ -966,6 +966,9 @@
   var TALLER_PRICE = 150; // precio de referencia por taller, por temporada
   var DEPOSIT = 50;       // seña fija para asegurar el cupo
 
+  var SUPABASE_URL = 'https://rptbdcjhqhbyelqnnxwr.supabase.co';
+  var SUPABASE_KEY = 'sb_publishable_-hLXy0QGF7EJ17H37IwQrA_xNqQk10a';
+
   var SLOTS = [
     {id:'s1', label:'Lun–Vie · 9:00 – 10:00 am'},
     {id:'s2', label:'Lun–Vie · 10:15 – 11:15 am'},
@@ -1145,16 +1148,77 @@
     var hint = document.getElementById('reserve-hint');
     return (hint && hint.textContent) ? hint.textContent : 'Completa tu reserva antes de continuar.';
   }
+
+  function saveReservation(){
+    var names = Array.from(selected);
+    if(names.length === 0) return;
+
+    var total = names.length * TALLER_PRICE;
+    var balance = Math.max(0, total - DEPOSIT);
+    var ageRaw = fieldVal('f-child-age');
+
+    var payload = {
+      child_name: fieldVal('f-child-name'),
+      child_age: ageRaw ? parseInt(ageRaw, 10) : null,
+      parent_name: fieldVal('f-parent-name') || null,
+      parent_phone: fieldVal('f-parent-phone') || null,
+      parent_email: fieldVal('f-parent-email') || null,
+      total: total,
+      deposit: DEPOSIT,
+      balance: balance
+    };
+
+    fetch(SUPABASE_URL + '/rest/v1/reservations', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': SUPABASE_KEY,
+        'Authorization': 'Bearer ' + SUPABASE_KEY,
+        'Prefer': 'return=representation'
+      },
+      body: JSON.stringify(payload)
+    }).then(function(res){
+      if(!res.ok) throw new Error('reservations insert failed: ' + res.status);
+      return res.json();
+    }).then(function(rows){
+      var reservationId = rows && rows[0] && rows[0].id;
+      if(!reservationId) return;
+      var itemRows = names.map(function(name){
+        return {
+          reservation_id: reservationId,
+          taller: name,
+          horario: slotLabel(horarios[name]),
+          price: TALLER_PRICE
+        };
+      });
+      return fetch(SUPABASE_URL + '/rest/v1/reservation_items', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': SUPABASE_KEY,
+          'Authorization': 'Bearer ' + SUPABASE_KEY
+        },
+        body: JSON.stringify(itemRows)
+      });
+    }).catch(function(err){
+      console.error('OASIS: no se pudo guardar la reserva en el servidor', err);
+    });
+  }
+
   document.getElementById('cta-email').addEventListener('click', function(e){
     if(this.getAttribute('aria-disabled') === 'true'){
       e.preventDefault();
       if(window.oasisToast) window.oasisToast(blockedToastMessage());
+    } else {
+      saveReservation();
     }
   });
   document.getElementById('cta-pay').addEventListener('click', function(e){
     if(this.getAttribute('aria-disabled') === 'true'){
       e.preventDefault();
       if(window.oasisToast) window.oasisToast(blockedToastMessage());
+    } else {
+      saveReservation();
     }
   });
 
