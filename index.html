@@ -59,6 +59,7 @@
   }
 
   *{box-sizing:border-box;}
+  [hidden]{display:none !important;}
   html{scroll-behavior:smooth;}
   body{
     margin:0;
@@ -231,67 +232,9 @@
   .p6{--c1:#F1E9FF;--c2:#E2D3FF;--c3:#6B3FA0;}
   .p7{--c1:#E0F5F5;--c2:#C6EBEA;--c3:#0E7A7A;}
 
-  .taller-scroll{position:relative;max-width:100%;}
-  .taller-scroll::after{
-    content:"";position:absolute;top:0;right:0;bottom:16px;width:40px;
-    background:linear-gradient(90deg, transparent, var(--surface));
-    pointer-events:none;
-  }
-  .taller-list{
-    display:flex;flex-direction:row;align-items:flex-start;gap:12px;
-    overflow-x:auto;overflow-y:visible;
-    scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;
-    padding:4px 36px 16px 4px;
-    scrollbar-width:thin;scrollbar-color:var(--magenta) var(--sand-alt);
-  }
-  .taller-list::-webkit-scrollbar{height:8px;}
-  .taller-list::-webkit-scrollbar-track{background:var(--sand-alt);border-radius:999px;}
-  .taller-list::-webkit-scrollbar-thumb{background:linear-gradient(90deg,var(--blue),var(--magenta));border-radius:999px;}
-  .taller-list::-webkit-scrollbar-thumb:hover{background:var(--magenta);}
-  .taller-item{
-    flex:0 0 164px;scroll-snap-align:start;
-    border-radius:18px;background:var(--surface);border:1.5px solid var(--border);
-    overflow:hidden;transition:border-color .15s ease;
-  }
-  .taller-item.selected{border-color:var(--c3);}
-  .taller-item.conflict{border-color:var(--magenta);}
-  .taller-row{
-    all:revert;appearance:none;background:none;border:none;font:inherit;text-align:center;cursor:pointer;
-    position:relative;
-    display:flex;flex-direction:column;align-items:center;gap:8px;width:100%;box-sizing:border-box;padding:18px 12px 16px;
-  }
-  .tr-icon-wrap{
-    flex:none;width:44px;height:44px;border-radius:50%;background:var(--c1);
-    display:flex;align-items:center;justify-content:center;
-  }
-  .tr-icon-wrap svg{width:22px;height:22px;color:var(--c3);}
-  .tr-text{display:flex;flex-direction:column;gap:2px;align-items:center;text-align:center;}
-  .tr-text strong{font-size:.92rem;color:var(--ink);font-weight:800;line-height:1.2;}
-  .tr-text span{font-size:.78rem;color:var(--ink-faint);font-weight:700;}
-  .tr-toggle{
-    position:absolute;top:10px;right:10px;
-    flex:none;width:24px;height:24px;border-radius:50%;border:2px solid var(--border);
-    display:flex;align-items:center;justify-content:center;color:transparent;background:var(--surface);
-    transition:background .15s ease, border-color .15s ease, color .15s ease;
-  }
-  .tr-toggle svg{width:13px;height:13px;}
-  .taller-item.selected .tr-toggle{background:var(--c3);border-color:var(--c3);color:#fff;}
-  .taller-panel{max-height:0;overflow:hidden;padding:0 12px;transition:max-height .25s ease;}
-  .taller-item.selected .taller-panel{max-height:220px;padding:0 12px 16px;}
-  .taller-panel-label{display:block;font-size:.76rem;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-faint);margin:0 0 8px;}
-  .horario-select{
-    width:100%;box-sizing:border-box;font-family:'Nunito',sans-serif;font-weight:700;font-size:.82rem;
-    color:var(--ink);background:var(--sand);border:1.5px solid var(--border);border-radius:10px;
-    padding:9px 10px;cursor:pointer;
-  }
-  .taller-item.conflict .horario-select{border-color:var(--magenta);}
-  .taller-conflict{
-    margin:8px 0 0;font-size:.74rem;font-weight:800;color:var(--magenta-deep);
-    display:flex;gap:5px;align-items:flex-start;text-align:left;
-  }
-  .taller-conflict svg{flex:none;width:14px;height:14px;margin-top:1px;}
-
+  /* Step indicator (4 dots: Catálogo / Mi reserva / Datos / Pago) */
   .step-indicator{display:flex;align-items:center;gap:8px;margin-bottom:22px;}
+  .step-indicator.is-hidden{display:none;}
   .step-dot{
     width:24px;height:24px;border-radius:50%;background:var(--sand-alt);color:var(--ink-faint);
     font-family:'Nunito',sans-serif;font-size:.76rem;font-weight:800;
@@ -299,9 +242,11 @@
     transition:background .15s ease,color .15s ease;
   }
   .step-dot.active{background:var(--magenta);color:#fff;}
-  .step-label{font-size:.82rem;font-weight:800;color:var(--ink-faint);transition:color .15s ease;}
-  .step-label.active{color:var(--ink);}
+  .step-label{font-size:.82rem;font-weight:800;color:var(--ink-faint);transition:color .15s ease;display:none;}
+  .step-label.active{color:var(--ink);display:inline;}
   .step-line{flex:1;height:1px;background:var(--border);}
+  @media (min-width:680px){.step-label{display:inline;}}
+
   .btn-continue{width:100%;margin-top:clamp(20px,3vw,28px);}
   .btn:disabled{opacity:.45;cursor:not-allowed;box-shadow:none;}
   .btn:disabled:hover{transform:none;}
@@ -311,13 +256,89 @@
   }
   .step-back:hover{text-decoration:underline;}
 
-  .talleres-footer{
-    margin-top:clamp(28px,4vw,40px);max-width:640px;margin-inline:auto;
+  /* Flow steps: only .is-active is shown, everything else stays out of flow */
+  .flow-step{display:none;}
+  .flow-step.is-active{display:block;}
+
+  /* Step 1 — Catálogo */
+  .category-pills{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:clamp(20px,3vw,28px);}
+  .pill{
+    font-family:'Nunito',sans-serif;font-weight:800;font-size:.84rem;color:var(--ink-soft);
+    background:var(--sand);border:1.5px solid var(--border);border-radius:999px;
+    padding:8px 16px;cursor:pointer;transition:background .15s ease,color .15s ease,border-color .15s ease;
+  }
+  .pill.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+  :root[data-theme="dark"] .pill.active{background:var(--magenta);border-color:var(--magenta);}
+
+  .catalog-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+  @media (max-width:680px){.catalog-grid{grid-template-columns:1fr;}}
+  .catalog-card{
+    display:flex;flex-direction:column;text-align:left;cursor:pointer;
+    border-radius:20px;overflow:hidden;background:var(--surface);
+    border:1.5px solid var(--border);transition:border-color .15s ease,transform .15s ease;
+  }
+  .catalog-card:hover{border-color:var(--c3);transform:translateY(-2px);}
+  .catalog-card.selected{border-color:var(--c3);box-shadow:0 0 0 2px var(--c1) inset;}
+  .catalog-card-photo{position:relative;aspect-ratio:4/3;overflow:hidden;}
+  .catalog-card-photo img{width:100%;height:100%;object-fit:cover;}
+  .catalog-card-tag{
+    position:absolute;top:10px;left:10px;background:var(--surface);color:var(--c3);
+    font-size:.72rem;font-weight:800;padding:4px 10px;border-radius:999px;
+  }
+  .catalog-card-check{
+    position:absolute;top:10px;right:10px;width:26px;height:26px;border-radius:50%;
+    background:var(--c3);color:#fff;display:none;align-items:center;justify-content:center;
+  }
+  .catalog-card.selected .catalog-card-check{display:flex;}
+  .catalog-card-check svg{width:14px;height:14px;}
+  .catalog-card-body{padding:14px 16px 18px;display:flex;flex-direction:column;gap:4px;}
+  .catalog-card-body strong{font-size:1rem;color:var(--ink);}
+  .catalog-card-body .meta{font-size:.82rem;color:var(--ink-faint);font-weight:700;}
+  .catalog-card-body .price-row{
+    display:flex;align-items:center;justify-content:space-between;margin-top:8px;
+  }
+  .catalog-card-body .price-row b{color:var(--magenta);font-family:'Baloo 2',sans-serif;font-size:1.05rem;}
+  .catalog-card-body .price-row span{color:var(--blue);font-weight:800;font-size:.86rem;}
+  .catalog-footer{
+    margin-top:clamp(24px,4vw,34px);display:flex;align-items:center;justify-content:space-between;gap:16px;
+    flex-wrap:wrap;background:var(--sand);border:1px solid var(--border);border-radius:18px;padding:16px 20px;
+  }
+  .catalog-footer p{margin:0;font-weight:800;font-size:.92rem;color:var(--ink-soft);}
+  .catalog-footer .btn{flex:none;}
+
+  /* Step 1b — Ficha del taller */
+  .ficha-photo{width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:20px;margin-bottom:20px;}
+  .ficha-head{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:4px;}
+  .ficha-head h2{font-size:clamp(1.5rem,3vw,2rem);margin:0;}
+  .ficha-tag{background:var(--c1);color:var(--c3);font-size:.76rem;font-weight:800;padding:4px 12px;border-radius:999px;}
+  .ficha-meta{display:flex;gap:24px;flex-wrap:wrap;margin:18px 0;}
+  .ficha-meta-item{display:flex;align-items:center;gap:8px;font-size:.88rem;font-weight:700;color:var(--ink-soft);}
+  .ficha-meta-item svg{width:18px;height:18px;color:var(--c3);flex:none;}
+  .ficha-desc{color:var(--ink-soft);font-size:1rem;max-width:62ch;margin:0 0 20px;}
+  .ficha-sub{font-size:.8rem;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-faint);margin:0 0 10px;}
+  .ficha-bullets{list-style:none;margin:0 0 26px;padding:0;display:flex;flex-direction:column;gap:9px;max-width:48ch;}
+  .ficha-bullets li{display:flex;gap:9px;align-items:flex-start;font-size:.94rem;color:var(--ink);}
+  .ficha-bullets svg{flex:none;width:16px;height:16px;margin-top:2px;color:var(--c3);}
+  .ficha-horarios{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:26px;}
+  .horario-pill{
+    font-family:'Nunito',sans-serif;font-weight:800;font-size:.84rem;color:var(--ink);
+    background:var(--surface);border:1.5px solid var(--border);border-radius:999px;
+    padding:10px 16px;cursor:pointer;transition:background .15s ease,color .15s ease,border-color .15s ease;
+  }
+  .horario-pill.active{background:var(--c3);border-color:var(--c3);color:#fff;}
+  .ficha-conflict{
+    margin:-14px 0 20px;font-size:.84rem;font-weight:800;color:var(--magenta-deep);
+    display:flex;gap:6px;align-items:flex-start;
+  }
+  .ficha-conflict svg{flex:none;width:16px;height:16px;margin-top:1px;}
+
+  /* Shared panel look for steps 2-5 */
+  .step-panel{
+    margin-top:clamp(20px,3vw,28px);max-width:640px;margin-inline:auto;
     display:flex;flex-direction:column;gap:16px;
     background:var(--sand);border:1px solid var(--border);border-radius:20px;padding:20px;
   }
-  .talleres-footer[hidden]{display:none;}
-  .talleres-footer > .btn{width:100%;}
+  .step-panel > .btn{width:100%;}
   .receipt-title{margin:0 2px;font-size:.78rem;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-faint);}
   .receipt{display:flex;flex-direction:column;gap:8px;}
   .receipt-empty{margin:0;color:var(--ink-soft);font-size:.92rem;text-align:center;padding:10px 0;}
@@ -331,11 +352,12 @@
   }
   .receipt-totals .total-row.balance b{font-family:'Baloo 2',sans-serif;color:var(--magenta);font-size:1.15rem;}
   .receipt-row{
-    display:flex;align-items:center;justify-content:space-between;gap:10px;
+    display:flex;align-items:center;gap:10px;
     background:var(--surface);border:1.5px solid var(--border);border-radius:12px;padding:10px 12px;
   }
   .receipt-row.warn{border-color:var(--magenta);}
-  .receipt-row-info{display:flex;flex-direction:column;gap:1px;min-width:0;}
+  .receipt-thumb{width:42px;height:42px;border-radius:10px;object-fit:cover;flex:none;}
+  .receipt-row-info{flex:1;display:flex;flex-direction:column;gap:1px;min-width:0;}
   .receipt-row-info strong{font-size:.92rem;color:var(--ink);}
   .receipt-row-info span{font-size:.8rem;color:var(--ink-faint);font-weight:700;}
   .receipt-row-info span.warn-text{color:var(--magenta-deep);}
@@ -345,6 +367,51 @@
   }
   .receipt-remove svg{width:14px;height:14px;}
   .receipt-remove:hover{background:var(--sand);color:var(--magenta-deep);}
+  .btn-add-more{
+    display:flex;align-items:center;justify-content:center;gap:8px;width:100%;
+    border:1.5px dashed var(--border);border-radius:12px;padding:12px;background:transparent;
+    color:var(--blue);font-family:'Nunito',sans-serif;font-weight:800;font-size:.9rem;cursor:pointer;
+  }
+  .btn-add-more:hover{border-color:var(--blue);}
+
+  /* Step 3 — Datos del participante */
+  .datos-grid{display:grid;grid-template-columns:1.3fr .9fr;gap:24px;align-items:start;}
+  @media (max-width:820px){.datos-grid{grid-template-columns:1fr;}}
+  .datos-grid .step-panel{margin-top:0;max-width:none;}
+
+  /* Step 4 — Pago */
+  .pago-methods{display:flex;flex-direction:column;gap:10px;}
+  .pago-method{
+    display:flex;align-items:center;gap:12px;border:1.5px solid var(--border);border-radius:14px;
+    padding:13px 16px;cursor:pointer;background:var(--surface);
+  }
+  .pago-method.active{border-color:var(--blue);background:var(--surface);box-shadow:0 0 0 2px var(--c1,rgba(26,86,232,.12)) inset;}
+  .pago-method input{accent-color:var(--blue);width:18px;height:18px;flex:none;}
+  .pago-method span{font-weight:800;font-size:.92rem;color:var(--ink);}
+  .altpay-panel{
+    display:flex;flex-direction:column;gap:10px;background:var(--surface);border:1.5px dashed var(--border);
+    border-radius:14px;padding:16px;font-size:.88rem;color:var(--ink-soft);
+  }
+  .altpay-panel b{color:var(--ink);}
+  .altpay-row{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;}
+
+  /* Step 5 — Confirmación */
+  .confirm-wrap{max-width:560px;margin:0 auto;text-align:center;padding:clamp(20px,4vw,40px) 0;position:relative;}
+  .confirm-check{
+    width:72px;height:72px;border-radius:50%;background:#EAF6EE;color:var(--leaf-deep);
+    display:flex;align-items:center;justify-content:center;margin:0 auto 20px;
+  }
+  .confirm-check svg{width:36px;height:36px;}
+  .confirm-wrap h2{font-size:clamp(1.6rem,3.2vw,2.1rem);margin:0 0 10px;}
+  .confirm-wrap p.lead{color:var(--ink-soft);font-size:1.02rem;margin:0 0 24px;}
+  .confirm-summary{
+    text-align:left;background:var(--sand);border:1px solid var(--border);border-radius:18px;
+    padding:18px;display:flex;flex-direction:column;gap:10px;margin-bottom:22px;
+  }
+  .confirm-note{font-size:.88rem;color:var(--ink-faint);margin-bottom:22px;}
+  .confetti-field{position:absolute;inset:0 0 auto 0;height:0;pointer-events:none;overflow:visible;}
+  .confetti-piece{position:absolute;top:0;width:8px;height:14px;border-radius:2px;animation:confetti-fall 1.4s ease-in forwards;}
+  @keyframes confetti-fall{to{transform:translateY(180px) rotate(300deg);opacity:0;}}
 
   /* ---------- Gallery ---------- */
   .gallery-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:28px;}
@@ -532,7 +599,7 @@
       <li><a href="#faq">Preguntas</a></li>
       <li><a href="#contacto">Contacto</a></li>
     </ul>
-    <a class="btn btn-primary nav-cta" href="#reserva">Reserva su cupo</a>
+    <a class="btn btn-primary nav-cta" href="#talleres">Reserva su cupo</a>
     <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Cambiar a modo oscuro">
       <svg class="icon-sun" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="4.2" stroke="currentColor" stroke-width="1.8"/><path d="M12 2.5v2.4M12 19.1v2.4M4.2 4.2l1.7 1.7M18.1 18.1l1.7 1.7M2.5 12h2.4M19.1 12h2.4M4.2 19.8l1.7-1.7M18.1 5.9l1.7-1.7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
       <svg class="icon-moon" viewBox="0 0 24 24" fill="none"><path d="M20 14.2A8.5 8.5 0 1 1 9.8 4a7 7 0 0 0 10.2 10.2Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
@@ -549,7 +616,7 @@
       <li><a href="#faq">Preguntas</a></li>
       <li><a href="#contacto">Contacto</a></li>
     </ul>
-    <a class="btn btn-primary" href="#reserva">Reserva su cupo</a>
+    <a class="btn btn-primary" href="#talleres">Reserva su cupo</a>
   </div>
 </header>
 
@@ -562,7 +629,7 @@
       <h1>En OASIS, cada verano es <span class="accent">una aventura</span></h1>
       <p class="lede">Academias de verano para aprender jugando — estimulación temprana, arte, deporte y cultura en más de 1000&nbsp;m² pensados para cada etapa, desde bebés hasta la adolescencia.</p>
       <div class="hero-ctas">
-        <a class="btn btn-primary" href="#reserva">Reserva su cupo</a>
+        <a class="btn btn-primary" href="#talleres">Reserva su cupo</a>
         <a class="btn btn-ghost" href="#talleres">Ver talleres</a>
       </div>
       <div class="hero-stats">
@@ -653,155 +720,155 @@
   <!-- TALLERES -->
   <section class="programs" id="talleres">
     <div class="wrap">
-      <div class="step-indicator">
-        <span class="step-dot active" id="step-dot-1">1</span>
-        <span class="step-label active" id="step-label-1">Talleres</span>
+      <div class="step-indicator" id="step-indicator">
+        <span class="step-dot active" data-dot="1">1</span>
+        <span class="step-label active" data-label="1">Catálogo</span>
         <span class="step-line"></span>
-        <span class="step-dot" id="step-dot-2">2</span>
-        <span class="step-label" id="step-label-2">Datos y pago</span>
+        <span class="step-dot" data-dot="2">2</span>
+        <span class="step-label" data-label="2">Mi reserva</span>
+        <span class="step-line"></span>
+        <span class="step-dot" data-dot="3">3</span>
+        <span class="step-label" data-label="3">Datos</span>
+        <span class="step-line"></span>
+        <span class="step-dot" data-dot="4">4</span>
+        <span class="step-label" data-label="4">Pago</span>
       </div>
 
-      <div id="step-talleres">
-      <div class="section-head">
-        <div class="eyebrow">Talleres y horario</div>
-        <h2>Arma la reserva de tu hij@</h2>
-        <p>Desliza para ver los 7 — toca uno para elegirlo y ponerle horario. Puedes elegir más de uno.</p>
+      <!-- Paso 1: Catálogo -->
+      <div class="flow-step is-active" id="step-catalogo">
+        <div class="section-head">
+          <div class="eyebrow">Talleres de verano</div>
+          <h2>Elige cómo quieres que sea su verano</h2>
+          <p>Talleres pensados para aprender, crear y divertirse. Toca "Ver taller" para elegir horario y añadirlo a tu reserva.</p>
+        </div>
+        <div class="category-pills" id="category-pills"></div>
+        <div class="catalog-grid" id="catalog-grid"></div>
+        <div class="catalog-footer" id="catalog-footer" hidden>
+          <p id="catalog-footer-text"></p>
+          <button type="button" class="btn btn-primary" id="btn-go-mireserva">Ver mi reserva →</button>
+        </div>
       </div>
 
-      <div class="taller-scroll">
-      <div class="taller-list">
-
-        <article class="taller-item p1" data-taller="Estimulación Temprana">
-          <button class="taller-row" type="button" aria-expanded="false">
-            <span class="tr-icon-wrap"><svg viewBox="0 0 24 24" fill="none"><path d="M12 21s-7-4.5-7-10a7 7 0 0 1 14 0c0 5.5-7 10-7 10Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><circle cx="12" cy="10.5" r="2.4" stroke="currentColor" stroke-width="1.6"/></svg></span>
-            <span class="tr-text"><strong>Estimulación Temprana</strong><span>Bebés – 2 años · S/150</span></span>
-            <span class="tr-toggle" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4 10-10" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-          </button>
-          <div class="taller-panel">
-            <label class="taller-panel-label">Horario</label>
-            <select class="horario-select"></select>
-            <p class="taller-conflict" hidden></p>
-          </div>
-        </article>
-
-        <article class="taller-item p5" data-taller="Modelaje">
-          <button class="taller-row" type="button" aria-expanded="false">
-            <span class="tr-icon-wrap"><svg viewBox="0 0 24 24" fill="none"><path d="M4 17c0-1.5 1.2-2.3 2.6-2.6L14 13c1.5-.3 2-1 2-2.3V8.3c0-.9.7-1.6 1.6-1.6.6 0 1.1.3 1.4.9l1.3 2.6c.5 1 .7 2.1.7 3.2V17a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M4 17h16" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></span>
-            <span class="tr-text"><strong>Modelaje</strong><span>7 – 16 años · S/150</span></span>
-            <span class="tr-toggle" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4 10-10" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-          </button>
-          <div class="taller-panel">
-            <label class="taller-panel-label">Horario</label>
-            <select class="horario-select"></select>
-            <p class="taller-conflict" hidden></p>
-          </div>
-        </article>
-
-        <article class="taller-item p3" data-taller="Marinera">
-          <button class="taller-row" type="button" aria-expanded="false">
-            <span class="tr-icon-wrap"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="5.5" r="2.2" stroke="currentColor" stroke-width="1.6"/><path d="M12 7.7v4.3M12 12c-3 1-5 3.2-5 6M12 12c3 1 5 3.2 5 6M9 9 6 7.5M15 9l3-1.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-            <span class="tr-text"><strong>Marinera</strong><span>3 – 16 años · S/150</span></span>
-            <span class="tr-toggle" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4 10-10" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-          </button>
-          <div class="taller-panel">
-            <label class="taller-panel-label">Horario</label>
-            <select class="horario-select"></select>
-            <p class="taller-conflict" hidden></p>
-          </div>
-        </article>
-
-        <article class="taller-item p4" data-taller="Ajedrez">
-          <button class="taller-row" type="button" aria-expanded="false">
-            <span class="tr-icon-wrap"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="6.3" r="2.3" stroke="currentColor" stroke-width="1.6"/><path d="M9.5 10.3h5l1 3.4h-7l1-3.4Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M7.5 18.3h9M8.4 15.4h7.2l.6 2.9H7.8l.6-2.9Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg></span>
-            <span class="tr-text"><strong>Ajedrez</strong><span>6 – 16 años · S/150</span></span>
-            <span class="tr-toggle" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4 10-10" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-          </button>
-          <div class="taller-panel">
-            <label class="taller-panel-label">Horario</label>
-            <select class="horario-select"></select>
-            <p class="taller-conflict" hidden></p>
-          </div>
-        </article>
-
-        <article class="taller-item p6" data-taller="Baile Moderno">
-          <button class="taller-row" type="button" aria-expanded="false">
-            <span class="tr-icon-wrap"><svg viewBox="0 0 24 24" fill="none"><path d="M9 18V6l10-2v12" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><circle cx="7" cy="18" r="2.2" stroke="currentColor" stroke-width="1.6"/><circle cx="17" cy="16" r="2.2" stroke="currentColor" stroke-width="1.6"/></svg></span>
-            <span class="tr-text"><strong>Baile Moderno</strong><span>6 – 16 años · S/150</span></span>
-            <span class="tr-toggle" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4 10-10" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-          </button>
-          <div class="taller-panel">
-            <label class="taller-panel-label">Horario</label>
-            <select class="horario-select"></select>
-            <p class="taller-conflict" hidden></p>
-          </div>
-        </article>
-
-        <article class="taller-item p2" data-taller="Dibujo y Pintura">
-          <button class="taller-row" type="button" aria-expanded="false">
-            <span class="tr-icon-wrap"><svg viewBox="0 0 24 24" fill="none"><path d="M12 4a8 8 0 1 0 0 16c1 0 1.8-.8 1.8-1.8 0-.5-.2-.9-.2-1.4 0-.7.6-1.2 1.3-1.2H16a4 4 0 0 0 4-4c0-4.2-3.6-7.6-8-7.6Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><circle cx="8.3" cy="10.5" r="1" fill="currentColor"/><circle cx="11.5" cy="7.8" r="1" fill="currentColor"/><circle cx="15" cy="9.5" r="1" fill="currentColor"/></svg></span>
-            <span class="tr-text"><strong>Dibujo y Pintura</strong><span>3 – 11 años · S/150</span></span>
-            <span class="tr-toggle" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4 10-10" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-          </button>
-          <div class="taller-panel">
-            <label class="taller-panel-label">Horario</label>
-            <select class="horario-select"></select>
-            <p class="taller-conflict" hidden></p>
-          </div>
-        </article>
-
-        <article class="taller-item p7" data-taller="Inglés">
-          <button class="taller-row" type="button" aria-expanded="false">
-            <span class="tr-icon-wrap"><svg viewBox="0 0 24 24" fill="none"><path d="M4 6.5a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H9l-3.5 3v-3H6a2 2 0 0 1-2-2v-7Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><text x="12" y="12.3" font-family="Nunito, sans-serif" font-weight="800" font-size="7" fill="currentColor" text-anchor="middle">A</text></svg></span>
-            <span class="tr-text"><strong>Inglés</strong><span>3 – 16 años · S/150</span></span>
-            <span class="tr-toggle" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4 10-10" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-          </button>
-          <div class="taller-panel">
-            <label class="taller-panel-label">Horario</label>
-            <select class="horario-select"></select>
-            <p class="taller-conflict" hidden></p>
-          </div>
-        </article>
-
-      </div>
-      </div>
-
-      <button type="button" class="btn btn-primary btn-continue" id="btn-continue" disabled>Elige al menos un taller</button>
-      </div>
-
-      <div class="talleres-footer" id="reserva" hidden>
-        <button type="button" class="step-back" id="btn-back-talleres">
+      <!-- Paso 1b: Ficha del taller -->
+      <div class="flow-step" id="step-ficha">
+        <button type="button" class="step-back" id="btn-back-catalogo">
           <svg viewBox="0 0 24 24" fill="none" width="16" height="16"><path d="M15 6l-6 6 6 6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          Editar talleres
+          Volver a talleres
         </button>
-        <p class="receipt-title">Tu reserva</p>
-        <div id="talleres-receipt" class="receipt"></div>
-        <div id="receipt-totals" class="receipt-totals" hidden></div>
+        <div id="ficha-content"></div>
+      </div>
 
-        <div class="reserve-form">
-          <p class="receipt-title">Datos de tu hij@ y de ti</p>
-          <div class="form-grid">
-            <label class="field"><span>Nombre del niño/a</span><input type="text" id="f-child-name" autocomplete="off" placeholder="Nombre y apellido"></label>
-            <label class="field"><span>Edad</span><input type="number" id="f-child-age" min="0" max="18" autocomplete="off" placeholder="Años"></label>
-            <label class="field"><span>Nombre del apoderado/a</span><input type="text" id="f-parent-name" autocomplete="off" placeholder="Tu nombre y apellido"></label>
-            <label class="field"><span>WhatsApp</span><input type="tel" id="f-parent-phone" autocomplete="off" placeholder="Ej. 987 654 321"></label>
-            <label class="field field-wide"><span>Correo electrónico</span><input type="email" id="f-parent-email" autocomplete="off" placeholder="tucorreo@ejemplo.com"></label>
+      <!-- Paso 2: Mi reserva -->
+      <div class="flow-step" id="step-mireserva">
+        <button type="button" class="step-back" id="btn-back-catalogo-2">
+          <svg viewBox="0 0 24 24" fill="none" width="16" height="16"><path d="M15 6l-6 6 6 6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Seguir viendo talleres
+        </button>
+        <div class="section-head">
+          <div class="eyebrow">Paso 2</div>
+          <h2>Mi reserva</h2>
+          <p>Revisa los talleres elegidos antes de continuar.</p>
+        </div>
+        <div class="step-panel">
+          <div id="talleres-receipt" class="receipt"></div>
+          <button type="button" class="btn-add-more" id="btn-add-more">
+            <svg viewBox="0 0 24 24" fill="none" width="16" height="16"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>
+            Añadir otro taller
+          </button>
+          <div id="receipt-totals" class="receipt-totals" hidden></div>
+          <p id="mireserva-hint" class="reserve-hint" hidden></p>
+          <button type="button" class="btn btn-primary" id="btn-continue" disabled>Elige al menos un taller</button>
+        </div>
+      </div>
+
+      <!-- Paso 3: Datos del participante -->
+      <div class="flow-step" id="step-datos">
+        <button type="button" class="step-back" id="btn-back-mireserva">
+          <svg viewBox="0 0 24 24" fill="none" width="16" height="16"><path d="M15 6l-6 6 6 6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Volver a mi reserva
+        </button>
+        <div class="section-head">
+          <div class="eyebrow">Paso 3</div>
+          <h2>Cuéntanos sobre el participante</h2>
+        </div>
+        <div class="datos-grid">
+          <div class="reserve-form step-panel">
+            <p class="receipt-title">Datos de tu hij@ y de ti</p>
+            <div class="form-grid">
+              <label class="field"><span>Nombre del niño/a</span><input type="text" id="f-child-name" autocomplete="off" placeholder="Nombre y apellido"></label>
+              <label class="field"><span>Edad</span><input type="number" id="f-child-age" min="0" max="18" autocomplete="off" placeholder="Años"></label>
+              <label class="field"><span>Nombre del apoderado/a</span><input type="text" id="f-parent-name" autocomplete="off" placeholder="Tu nombre y apellido"></label>
+              <label class="field"><span>WhatsApp</span><input type="tel" id="f-parent-phone" autocomplete="off" placeholder="Ej. 987 654 321"></label>
+              <label class="field field-wide"><span>Correo electrónico</span><input type="email" id="f-parent-email" autocomplete="off" placeholder="tucorreo@ejemplo.com"></label>
+            </div>
+            <p id="datos-hint" class="reserve-hint" hidden></p>
+            <button type="button" class="btn btn-primary" id="btn-go-pago">Siguiente →</button>
+          </div>
+          <div class="step-panel">
+            <p class="receipt-title">Tu reserva</p>
+            <div id="datos-receipt" class="receipt"></div>
+            <div id="datos-totals" class="receipt-totals" hidden></div>
           </div>
         </div>
+      </div>
 
-        <div class="reserve-cta">
-          <div class="price-tag"><b>S/50</b><span>seña para asegurar el cupo</span></div>
+      <!-- Paso 4: Pago -->
+      <div class="flow-step" id="step-pago">
+        <button type="button" class="step-back" id="btn-back-datos">
+          <svg viewBox="0 0 24 24" fill="none" width="16" height="16"><path d="M15 6l-6 6 6 6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Volver
+        </button>
+        <div class="section-head">
+          <div class="eyebrow">Paso 4</div>
+          <h2>Reserva tu plaza</h2>
+        </div>
+        <div class="reserve-cta step-panel">
+          <div class="note">
+            <svg viewBox="0 0 24 24" fill="none"><rect x="3.5" y="5" width="17" height="15" rx="2.5" stroke="currentColor" stroke-width="1.6"/><path d="M3.5 9.5h17M8 3v4M16 3v4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+            <span>Hoy pagas solo la seña. El resto (saldo) se cobra una semana antes de iniciar el taller — te avisamos antes por correo.</span>
+          </div>
+          <div id="pago-totals" class="receipt-totals"></div>
+          <div class="pago-methods">
+            <label class="pago-method active" id="method-card">
+              <input type="radio" name="pago-metodo" value="card" checked>
+              <span>Tarjeta de crédito o débito</span>
+            </label>
+            <label class="pago-method" id="method-alt">
+              <input type="radio" name="pago-metodo" value="alt">
+              <span>Yape / Plin / Transferencia</span>
+            </label>
+          </div>
+          <div class="altpay-panel" id="altpay-panel" hidden>
+            <div class="altpay-row"><span>Yape / Plin</span><b>+51 982 031 159</b></div>
+            <div class="altpay-row"><span>A nombre de</span><b>Emilia Alessandra Velasquez Vera</b></div>
+            <div class="altpay-row"><span>Interbank · Cuenta Simple Soles</span><b>898-3477351-4-51</b></div>
+            <div class="altpay-row"><span>CCI</span><b>003-898-013477351451-45</b></div>
+            <a class="btn btn-primary" id="btn-whatsapp-confirm" href="#" target="_blank" rel="noopener">Ya pagué, avisar por WhatsApp</a>
+          </div>
           <a class="btn btn-primary" id="cta-pay" href="#" data-pay-href="https://buy.stripe.com/eVq3co58L4ZPfBq7UTaR200" target="_blank" rel="noopener">Pagar la seña (S/50)</a>
-          <a class="btn btn-outline" id="cta-email" href="#" target="_blank" rel="noopener">Enviar mis datos por correo</a>
           <p id="reserve-hint" class="reserve-hint" hidden></p>
           <div class="note urgent">
             <svg viewBox="0 0 24 24" fill="none"><path d="M12 9v4m0 4h.01M10.3 3.9 2.5 18a1.8 1.8 0 0 0 1.6 2.6h16a1.8 1.8 0 0 0 1.6-2.6L13.7 3.9a1.8 1.8 0 0 0-3.4 0Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
             <span>Cupos limitados — con +100 inscritos cada temporada, suelen agotarse rápido.</span>
           </div>
-          <div class="note">
-            <svg viewBox="0 0 24 24" fill="none"><rect x="3.5" y="5" width="17" height="15" rx="2.5" stroke="currentColor" stroke-width="1.6"/><path d="M3.5 9.5h17M8 3v4M16 3v4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
-            <span>El saldo restante vence una semana antes de iniciar clases. Te enviaremos un recordatorio antes de la fecha.</span>
+          <p class="reserve-hint" style="color:var(--ink-faint);">🔒 Pago seguro · Tus datos están protegidos</p>
+        </div>
+      </div>
+
+      <!-- Paso 5: Confirmación -->
+      <div class="flow-step" id="step-confirmacion">
+        <div class="confirm-wrap">
+          <div class="confetti-field" id="confetti-field"></div>
+          <div class="confirm-check"><svg viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4 10-10" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <h2>¡Reserva confirmada!</h2>
+          <p class="lead" id="confirm-lead">Hemos recibido tu reserva.</p>
+          <div class="confirm-summary">
+            <p class="receipt-title">Resumen de tu reserva</p>
+            <div id="confirm-receipt" class="receipt"></div>
+            <div id="confirm-totals" class="receipt-totals"></div>
           </div>
-          <p style="font-size:.78rem;color:var(--ink-faint);margin:0;">Al pagar la seña, envíanos también tus datos por correo para que podamos cruzar tu pago con tu reserva.</p>
+          <p class="confirm-note">Te hemos enviado un correo con los detalles de tu reserva. ¡Nos vemos pronto!</p>
+          <a class="btn btn-primary" href="#top">Ir al inicio</a>
         </div>
       </div>
     </div>
@@ -1018,6 +1085,7 @@
 
   var SUPABASE_URL = 'https://rptbdcjhqhbyelqnnxwr.supabase.co';
   var SUPABASE_KEY = 'sb_publishable_-hLXy0QGF7EJ17H37IwQrA_xNqQk10a';
+  var WHATSAPP_NUMBER = '51982031159';
 
   var SLOTS = [
     {id:'s1', label:'Lun–Vie · 9:00 – 10:00 am'},
@@ -1027,22 +1095,58 @@
     {id:'s5', label:'Lun–Vie · 4:15 – 5:15 pm'}
   ];
 
-  var items = Array.prototype.slice.call(document.querySelectorAll('.taller-item[data-taller]'));
+  var CATEGORIES = [
+    {id:'todos', label:'Todos'},
+    {id:'arte', label:'Arte'},
+    {id:'movimiento', label:'Movimiento'},
+    {id:'ajedrez', label:'Ajedrez'},
+    {id:'idiomas', label:'Idiomas'},
+    {id:'primera-infancia', label:'Primera infancia'}
+  ];
+
+  var TALLERES = [
+    {name:'Estimulación Temprana', cls:'p1', cat:'primera-infancia', age:'Bebés – 2 años', duration:'1 hora', photo:'assets/photo1.jpg',
+      desc:'Un espacio sensorial para que los más pequeños exploren, se muevan y descubran el mundo jugando, acompañados por su cuidador.',
+      bullets:['Juego sensorial y motor','Música y estimulación temprana','Acompañado por mamá, papá o cuidador']},
+    {name:'Dibujo y Pintura', cls:'p2', cat:'arte', age:'3 – 11 años', duration:'1 hora', photo:'assets/photo2.jpg',
+      desc:'Un espacio para experimentar con colores, formas y diferentes técnicas artísticas mientras desarrollan su creatividad.',
+      bullets:['Pintura y manualidades','Técnicas artísticas variadas','Proyecto creativo propio']},
+    {name:'Marinera', cls:'p3', cat:'movimiento', age:'3 – 16 años', duration:'1 hora', photo:'assets/photo3.jpg',
+      desc:'Aprenden los pasos y el espíritu de la marinera peruana, ganando ritmo, postura y confianza en el escenario.',
+      bullets:['Pasos básicos de marinera','Trabajo de ritmo y postura','Muestra final para la familia']},
+    {name:'Ajedrez', cls:'p4', cat:'ajedrez', age:'6 – 16 años', duration:'1 hora', photo:'assets/photo4.jpg',
+      desc:'Desarrollan pensamiento estratégico y paciencia mientras aprenden a jugar ajedrez paso a paso, desde lo básico hasta tácticas sencillas.',
+      bullets:['Movimientos y reglas del juego','Ejercicios de táctica','Partidas guiadas entre compañeros']},
+    {name:'Modelaje', cls:'p5', cat:'arte', age:'7 – 16 años', duration:'1 hora', photo:'assets/photo5.jpg',
+      desc:'Trabajan postura, expresión corporal y seguridad escénica en un ambiente divertido y respetuoso.',
+      bullets:['Postura y caminata','Expresión frente a cámara','Seguridad y confianza escénica']},
+    {name:'Baile Moderno', cls:'p6', cat:'movimiento', age:'6 – 16 años', duration:'1 hora', photo:'assets/photo6.jpg',
+      desc:'Coreografías dinámicas al ritmo de música actual, para soltarse, moverse y trabajar en equipo.',
+      bullets:['Coreografía grupal','Calentamiento y ritmo','Presentación final']},
+    {name:'Inglés', cls:'p7', cat:'idiomas', age:'3 – 16 años', duration:'1 hora', photo:'assets/photo1.jpg',
+      desc:'Aprenden inglés de forma lúdica, con canciones, juegos y conversación sencilla adaptada a su edad.',
+      bullets:['Vocabulario y frases básicas','Canciones y juegos en inglés','Práctica de conversación simple']}
+  ];
+
   var selected = new Set();   // talleres elegidos
   var horarios = {};          // taller -> slot id
+  var activeCategory = 'todos';
+  var fichaName = null;       // taller cuya ficha está abierta
+  var fichaSlot = null;       // horario elegido temporalmente en la ficha (aún no confirmado)
+
+  function findTaller(name){
+    return TALLERES.filter(function(t){ return t.name === name; })[0] || null;
+  }
 
   function slotLabel(id){
     var s = SLOTS.filter(function(s){ return s.id === id; })[0];
     return s ? s.label : '';
   }
 
-  // Populate every horario <select> once, up front.
-  items.forEach(function(item){
-    var select = item.querySelector('.horario-select');
-    select.innerHTML = '<option value="">Elige un horario…</option>' + SLOTS.map(function(s){
-      return '<option value="' + s.id + '">' + s.label + '</option>';
-    }).join('');
-  });
+  function fieldVal(id){
+    var el = document.getElementById(id);
+    return el ? el.value.trim() : '';
+  }
 
   function findConflicts(){
     var bySlot = {};
@@ -1058,147 +1162,240 @@
     return conflicts;
   }
 
-  function render(){
-    var names = Array.from(selected);
-    var conflicts = findConflicts();
-    var conflictedBy = {}; // taller -> label of the other taller it clashes with
-    conflicts.forEach(function(c){
+  function conflictMap(){
+    var conflictedBy = {};
+    findConflicts().forEach(function(c){
       c.talleres.forEach(function(name){
         var others = c.talleres.filter(function(n){ return n !== name; });
         conflictedBy[name] = {others: others, slot: c.slot};
       });
     });
-
-    items.forEach(function(item){
-      var name = item.getAttribute('data-taller');
-      var isSelected = selected.has(name);
-      var row = item.querySelector('.taller-row');
-      var select = item.querySelector('.horario-select');
-      var conflictMsg = item.querySelector('.taller-conflict');
-
-      item.classList.toggle('selected', isSelected);
-      row.setAttribute('aria-expanded', isSelected ? 'true' : 'false');
-      select.value = horarios[name] || '';
-
-      var hasConflict = isSelected && !!conflictedBy[name];
-      item.classList.toggle('conflict', hasConflict);
-      if(hasConflict){
-        conflictMsg.hidden = false;
-        conflictMsg.innerHTML = '<svg viewBox="0 0 24 24" fill="none"><path d="M12 9v4m0 4h.01M10.3 3.9 2.5 18a1.8 1.8 0 0 0 1.6 2.6h16a1.8 1.8 0 0 0 1.6-2.6L13.7 3.9a1.8 1.8 0 0 0-3.4 0Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg><span>Choca con ' + conflictedBy[name].others.join(' y ') + ' (' + slotLabel(conflictedBy[name].slot) + ') — elige otro horario.</span>';
-      } else {
-        conflictMsg.hidden = true;
-      }
-    });
-
-    var receiptBox = document.getElementById('talleres-receipt');
-    var totalsBox = document.getElementById('receipt-totals');
-
-    if(names.length === 0){
-      if(receiptBox) receiptBox.innerHTML = '<p class="receipt-empty">Toca uno o más talleres arriba para armar tu reserva.</p>';
-      if(totalsBox) totalsBox.hidden = true;
-    } else if(receiptBox){
-      receiptBox.innerHTML = names.map(function(name){
-        var warn = conflictedBy[name];
-        var hasSlot = !!horarios[name];
-        var sub = warn ? ('Choca con ' + warn.others.join(' y ')) : (hasSlot ? (slotLabel(horarios[name]) + ' · S/' + TALLER_PRICE) : 'Falta elegir horario');
-        var subClass = (warn || !hasSlot) ? ' class="warn-text"' : '';
-        return '<div class="receipt-row' + (warn ? ' warn' : '') + '">' +
-          '<div class="receipt-row-info"><strong>' + name + '</strong><span' + subClass + '>' + sub + '</span></div>' +
-          '<button type="button" class="receipt-remove" data-remove="' + name + '" aria-label="Quitar ' + name + '">' +
-            '<svg viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6 6 18" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>' +
-          '</button>' +
-        '</div>';
-      }).join('');
-      Array.prototype.slice.call(receiptBox.querySelectorAll('.receipt-remove')).forEach(function(btn){
-        btn.addEventListener('click', function(){
-          var name = btn.getAttribute('data-remove');
-          selected.delete(name);
-          delete horarios[name];
-          render();
-        });
-      });
-
-      if(totalsBox){
-        var total = names.length * TALLER_PRICE;
-        var balance = Math.max(0, total - DEPOSIT);
-        totalsBox.hidden = false;
-        totalsBox.innerHTML =
-          '<div class="total-row"><span>Total (' + names.length + (names.length === 1 ? ' taller' : ' talleres') + ')</span><span>S/' + total + '</span></div>' +
-          '<div class="total-row"><span>Seña (se descuenta del total)</span><span>S/' + DEPOSIT + '</span></div>' +
-          '<div class="total-row balance"><span>Saldo restante</span><b>S/' + balance + '</b></div>';
-      }
-    }
-
-    var continueBtn = document.getElementById('btn-continue');
-    if(continueBtn){
-      continueBtn.disabled = names.length === 0;
-      continueBtn.textContent = names.length === 0 ? 'Elige al menos un taller' : 'Continuar (' + names.length + (names.length === 1 ? ' taller' : ' talleres') + ')';
-    }
-
-    updateMailto();
+    return conflictedBy;
   }
 
-  function fieldVal(id){
-    var el = document.getElementById(id);
-    return el ? el.value.trim() : '';
-  }
-
-  function updateMailto(){
-    var cta = document.getElementById('cta-email');
-    var ctaPay = document.getElementById('cta-pay');
-    var hint = document.getElementById('reserve-hint');
-    if(!cta) return;
-
-    var childName = fieldVal('f-child-name');
-    var childAge = fieldVal('f-child-age');
-    var parentName = fieldVal('f-parent-name');
-    var parentPhone = fieldVal('f-parent-phone');
-    var parentEmail = fieldVal('f-parent-email');
-
+  function getProblems(){
     var names = Array.from(selected);
     var missingHorario = names.filter(function(n){ return !horarios[n]; });
     var hasConflict = findConflicts().length > 0;
+    var childName = fieldVal('f-child-name');
 
     var problems = [];
     if(names.length === 0) problems.push('elige al menos un taller');
     if(missingHorario.length) problems.push('ponle horario a ' + missingHorario.join(' y '));
     if(hasConflict) problems.push('resuelve el cruce de horarios');
     if(!childName) problems.push('escribe el nombre del niño/a');
+    return problems;
+  }
 
-    var ready = problems.length === 0;
-    cta.setAttribute('aria-disabled', ready ? 'false' : 'true');
-    if(ctaPay){
-      ctaPay.setAttribute('aria-disabled', ready ? 'false' : 'true');
-      ctaPay.href = ready ? ctaPay.getAttribute('data-pay-href') : '#';
+  // ---------- Paso 1: Catálogo ----------
+  function renderCategoryPills(){
+    var box = document.getElementById('category-pills');
+    if(!box) return;
+    box.innerHTML = CATEGORIES.map(function(c){
+      return '<button type="button" class="pill' + (c.id === activeCategory ? ' active' : '') + '" data-cat="' + c.id + '">' + c.label + '</button>';
+    }).join('');
+    Array.prototype.slice.call(box.querySelectorAll('.pill')).forEach(function(btn){
+      btn.addEventListener('click', function(){
+        activeCategory = btn.getAttribute('data-cat');
+        renderCategoryPills();
+        renderCatalog();
+      });
+    });
+  }
+
+  function renderCatalog(){
+    var grid = document.getElementById('catalog-grid');
+    if(!grid) return;
+    var list = TALLERES.filter(function(t){ return activeCategory === 'todos' || t.cat === activeCategory; });
+    grid.innerHTML = list.map(function(t){
+      var catLabel = (CATEGORIES.filter(function(c){ return c.id === t.cat; })[0] || {}).label || '';
+      var isSelected = selected.has(t.name);
+      return '<button type="button" class="catalog-card ' + t.cls + (isSelected ? ' selected' : '') + '" data-taller="' + t.name + '">' +
+        '<span class="catalog-card-photo">' +
+          '<img src="' + t.photo + '" alt="' + t.name + '" loading="lazy">' +
+          '<span class="catalog-card-tag">' + catLabel + '</span>' +
+          '<span class="catalog-card-check"><svg viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4 10-10" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span>' +
+        '</span>' +
+        '<span class="catalog-card-body">' +
+          '<strong>' + t.name + '</strong>' +
+          '<span class="meta">' + t.age + ' · ' + t.duration + '</span>' +
+          '<span class="price-row"><b>S/' + TALLER_PRICE + '</b><span>Ver taller →</span></span>' +
+        '</span>' +
+      '</button>';
+    }).join('');
+    Array.prototype.slice.call(grid.querySelectorAll('.catalog-card')).forEach(function(card){
+      card.addEventListener('click', function(){
+        openFicha(card.getAttribute('data-taller'));
+      });
+    });
+
+    var footer = document.getElementById('catalog-footer');
+    var footerText = document.getElementById('catalog-footer-text');
+    if(footer && footerText){
+      var count = selected.size;
+      footer.hidden = count === 0;
+      footerText.textContent = count + (count === 1 ? ' taller elegido' : ' talleres elegidos');
     }
+  }
+
+  // ---------- Paso 1b: Ficha del taller ----------
+  function openFicha(name){
+    var t = findTaller(name);
+    if(!t) return;
+    fichaName = name;
+    fichaSlot = horarios[name] || null;
+    renderFicha();
+    showStep('ficha');
+  }
+
+  function renderFicha(){
+    var t = findTaller(fichaName);
+    var box = document.getElementById('ficha-content');
+    if(!t || !box) return;
+    var catLabel = (CATEGORIES.filter(function(c){ return c.id === t.cat; })[0] || {}).label || '';
+
+    var tempConflict = null;
+    if(fichaSlot){
+      var others = Array.from(selected).filter(function(n){
+        return n !== fichaName && horarios[n] === fichaSlot;
+      });
+      if(others.length) tempConflict = others;
+    }
+
+    var alreadyAdded = selected.has(fichaName);
+
+    box.className = t.cls;
+    box.innerHTML =
+      '<img class="ficha-photo" src="' + t.photo + '" alt="' + t.name + '">' +
+      '<div class="ficha-head"><h2>' + t.name + '</h2><span class="ficha-tag">' + catLabel + '</span></div>' +
+      '<div class="ficha-meta">' +
+        '<span class="ficha-meta-item"><svg viewBox="0 0 24 24" fill="none"><path d="M12 21s-7-4.5-7-10a7 7 0 0 1 14 0c0 5.5-7 10-7 10Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><circle cx="12" cy="10.5" r="2.4" stroke="currentColor" stroke-width="1.6"/></svg>' + t.age + '</span>' +
+        '<span class="ficha-meta-item"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8.5" stroke="currentColor" stroke-width="1.6"/><path d="M12 7.5V12l3 2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>' + t.duration + '</span>' +
+        '<span class="ficha-meta-item"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3v18M7 7.5c0-1.9 2-3 5-3s5 1.1 5 2.4c0 3.4-10 1.4-10 5 0 1.6 2 2.6 5 2.6s5-1.1 5-2.6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>S/' + TALLER_PRICE + '</span>' +
+      '</div>' +
+      '<p class="ficha-desc">' + t.desc + '</p>' +
+      '<p class="ficha-sub">¿Qué harán?</p>' +
+      '<ul class="ficha-bullets">' + t.bullets.map(function(b){
+        return '<li><svg viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4 10-10" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>' + b + '</li>';
+      }).join('') + '</ul>' +
+      '<p class="ficha-sub">Elige un horario</p>' +
+      '<div class="ficha-horarios">' + SLOTS.map(function(s){
+        return '<button type="button" class="horario-pill' + (fichaSlot === s.id ? ' active' : '') + '" data-slot="' + s.id + '">' + s.label + '</button>';
+      }).join('') + '</div>' +
+      (tempConflict ? '<p class="ficha-conflict"><svg viewBox="0 0 24 24" fill="none"><path d="M12 9v4m0 4h.01M10.3 3.9 2.5 18a1.8 1.8 0 0 0 1.6 2.6h16a1.8 1.8 0 0 0 1.6-2.6L13.7 3.9a1.8 1.8 0 0 0-3.4 0Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg><span>Choca con ' + tempConflict.join(' y ') + ' — puedes elegir otro horario.</span></p>' : '') +
+      '<button type="button" class="btn btn-primary" id="btn-add-ficha"' + (fichaSlot ? '' : ' disabled') + '>' + (alreadyAdded ? 'Actualizar horario' : 'Añadir a mi reserva →') + '</button>';
+
+    Array.prototype.slice.call(box.querySelectorAll('.horario-pill')).forEach(function(pill){
+      pill.addEventListener('click', function(){
+        fichaSlot = pill.getAttribute('data-slot');
+        renderFicha();
+      });
+    });
+
+    var addBtn = document.getElementById('btn-add-ficha');
+    if(addBtn){
+      addBtn.addEventListener('click', function(){
+        if(!fichaSlot) return;
+        selected.add(fichaName);
+        horarios[fichaName] = fichaSlot;
+        if(window.oasisToast) window.oasisToast(fichaName + ' se añadió a tu reserva.');
+        renderCatalog();
+        showStep('catalogo');
+      });
+    }
+  }
+
+  // ---------- Recibo reutilizable (Mi reserva / Datos / Confirmación) ----------
+  function buildReceiptRows(names, removable){
+    if(names.length === 0) return '<p class="receipt-empty">Toca uno o más talleres del catálogo para armar tu reserva.</p>';
+    var conflictedBy = conflictMap();
+    return names.map(function(name){
+      var t = findTaller(name);
+      var warn = conflictedBy[name];
+      var hasSlot = !!horarios[name];
+      var sub = warn ? ('Choca con ' + warn.others.join(' y ')) : (hasSlot ? (slotLabel(horarios[name]) + ' · S/' + TALLER_PRICE) : 'Falta elegir horario');
+      var subClass = (warn || !hasSlot) ? ' class="warn-text"' : '';
+      var photo = t ? t.photo : '';
+      return '<div class="receipt-row' + (warn ? ' warn' : '') + '">' +
+        (photo ? '<img class="receipt-thumb" src="' + photo + '" alt="">' : '') +
+        '<div class="receipt-row-info"><strong>' + name + '</strong><span' + subClass + '>' + sub + '</span></div>' +
+        (removable ? '<button type="button" class="receipt-remove" data-remove="' + name + '" aria-label="Quitar ' + name + '"><svg viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6 6 18" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg></button>' : '') +
+      '</div>';
+    }).join('');
+  }
+
+  function buildTotalsHTML(count){
+    var total = count * TALLER_PRICE;
+    var balance = Math.max(0, total - DEPOSIT);
+    return '<div class="total-row"><span>Total (' + count + (count === 1 ? ' taller' : ' talleres') + ')</span><span>S/' + total + '</span></div>' +
+      '<div class="total-row"><span>Seña (se descuenta del total)</span><span>S/' + DEPOSIT + '</span></div>' +
+      '<div class="total-row balance"><span>Saldo restante</span><b>S/' + balance + '</b></div>';
+  }
+
+  function renderReceiptInto(receiptId, totalsId, removable){
+    var names = Array.from(selected);
+    var receiptBox = document.getElementById(receiptId);
+    var totalsBox = totalsId ? document.getElementById(totalsId) : null;
+    if(receiptBox){
+      receiptBox.innerHTML = buildReceiptRows(names, removable);
+      if(removable){
+        Array.prototype.slice.call(receiptBox.querySelectorAll('.receipt-remove')).forEach(function(btn){
+          btn.addEventListener('click', function(){
+            var name = btn.getAttribute('data-remove');
+            selected.delete(name);
+            delete horarios[name];
+            renderMiReserva();
+          });
+        });
+      }
+    }
+    if(totalsBox){
+      totalsBox.hidden = names.length === 0;
+      if(names.length) totalsBox.innerHTML = buildTotalsHTML(names.length);
+    }
+  }
+
+  // ---------- Paso 2: Mi reserva ----------
+  function renderMiReserva(){
+    renderReceiptInto('talleres-receipt', 'receipt-totals', true);
+    var continueBtn = document.getElementById('btn-continue');
+    var hint = document.getElementById('mireserva-hint');
+    var count = selected.size;
+    if(continueBtn){
+      continueBtn.disabled = count === 0;
+      continueBtn.textContent = count === 0 ? 'Elige al menos un taller' : 'Continuar (' + count + (count === 1 ? ' taller' : ' talleres') + ')';
+    }
+    if(hint){
+      var hasConflict = findConflicts().length > 0;
+      hint.hidden = !hasConflict;
+      if(hasConflict) hint.textContent = 'Tienes talleres con el mismo horario — edítalos antes de continuar.';
+    }
+  }
+
+  // ---------- Paso 4: Pago ----------
+  function updateWhatsappLink(){
+    var link = document.getElementById('btn-whatsapp-confirm');
+    if(!link) return;
+    var names = Array.from(selected);
+    var total = names.length * TALLER_PRICE;
+    var childName = fieldVal('f-child-name') || '(sin nombre)';
+    var msg = 'Hola! Quiero confirmar el pago de la seña (S/' + DEPOSIT + ') de la reserva de ' + childName +
+      ' para: ' + names.join(', ') + '. Total: S/' + total + '.';
+    link.href = 'https://wa.me/' + WHATSAPP_NUMBER + '?text=' + encodeURIComponent(msg);
+  }
+
+  function updatePagoReadiness(){
+    var ctaPay = document.getElementById('cta-pay');
+    var hint = document.getElementById('reserve-hint');
+    if(!ctaPay) return;
+    var problems = getProblems();
+    var ready = problems.length === 0;
+    ctaPay.setAttribute('aria-disabled', ready ? 'false' : 'true');
+    ctaPay.href = ready ? ctaPay.getAttribute('data-pay-href') : '#';
     if(hint){
       hint.hidden = ready;
       if(!ready) hint.textContent = 'Para reservar falta: ' + problems.join(' · ') + '.';
     }
-
-    if(!ready){
-      cta.href = '#';
-      return;
-    }
-
-    var lines = names.map(function(name){
-      return '- ' + name + ': ' + slotLabel(horarios[name]) + ' (S/' + TALLER_PRICE + ')';
-    });
-    var total = names.length * TALLER_PRICE;
-    var balance = Math.max(0, total - DEPOSIT);
-
-    var subject = 'Reserva de cupo — ' + childName;
-    var body = 'Hola, quiero reservar el cupo de mi hij@ en OASIS:\n\n' +
-      'Niño/a: ' + childName + (childAge ? ' (' + childAge + ' años)' : '') + '\n\n' +
-      'Talleres:\n' + lines.join('\n') + '\n\n' +
-      'Total: S/' + total + '\n' +
-      'Seña: S/' + DEPOSIT + '\n' +
-      'Saldo restante: S/' + balance + '\n\n' +
-      'Apoderado/a: ' + (parentName || '(completar)') + '\n' +
-      'WhatsApp: ' + (parentPhone || '(completar)') + '\n' +
-      'Correo: ' + (parentEmail || '(completar)');
-
-    cta.href = 'mailto:oasisacademiasaqp@gmail.com?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
   }
 
   function blockedToastMessage(){
@@ -1263,14 +1460,6 @@
     });
   }
 
-  document.getElementById('cta-email').addEventListener('click', function(e){
-    if(this.getAttribute('aria-disabled') === 'true'){
-      e.preventDefault();
-      if(window.oasisToast) window.oasisToast(blockedToastMessage());
-    } else {
-      saveReservation();
-    }
-  });
   document.getElementById('cta-pay').addEventListener('click', function(e){
     if(this.getAttribute('aria-disabled') === 'true'){
       e.preventDefault();
@@ -1292,63 +1481,146 @@
 
   ['f-child-name','f-child-age','f-parent-name','f-parent-phone','f-parent-email'].forEach(function(id){
     var el = document.getElementById(id);
-    if(el) el.addEventListener('input', updateMailto);
+    if(el) el.addEventListener('input', function(){ updatePagoReadiness(); updateWhatsappLink(); });
   });
 
-  items.forEach(function(item){
-    var name = item.getAttribute('data-taller');
-    var row = item.querySelector('.taller-row');
-    var select = item.querySelector('.horario-select');
-
-    row.addEventListener('click', function(){
-      if(selected.has(name)){
-        selected.delete(name);
-        delete horarios[name];
-      } else {
-        selected.add(name);
-      }
-      render();
-    });
-
-    select.addEventListener('click', function(e){ e.stopPropagation(); });
-    select.addEventListener('change', function(){
-      if(select.value) horarios[name] = select.value; else delete horarios[name];
-      render();
+  Array.prototype.slice.call(document.querySelectorAll('input[name="pago-metodo"]')).forEach(function(radio){
+    radio.addEventListener('change', function(){
+      var isAlt = radio.value === 'alt' && radio.checked;
+      document.getElementById('method-card').classList.toggle('active', !isAlt);
+      document.getElementById('method-alt').classList.toggle('active', isAlt);
+      document.getElementById('altpay-panel').hidden = !isAlt;
+      document.getElementById('cta-pay').hidden = isAlt;
+      if(isAlt) updateWhatsappLink();
     });
   });
 
-  function goToStep(step){
-    var stepTalleres = document.getElementById('step-talleres');
-    var stepReserva = document.getElementById('reserva');
-    var dot1 = document.getElementById('step-dot-1');
-    var dot2 = document.getElementById('step-dot-2');
-    var label1 = document.getElementById('step-label-1');
-    var label2 = document.getElementById('step-label-2');
-    if(!stepTalleres || !stepReserva) return;
+  // ---------- Navegación entre pasos ----------
+  var STEP_DOT = {catalogo:1, ficha:1, mireserva:2, datos:3, pago:4, confirmacion:0};
 
-    stepTalleres.hidden = step !== 1;
-    stepReserva.hidden = step !== 2;
-    if(dot1) dot1.classList.toggle('active', step === 1);
-    if(dot2) dot2.classList.toggle('active', step === 2);
-    if(label1) label1.classList.toggle('active', step === 1);
-    if(label2) label2.classList.toggle('active', step === 2);
+  function showStep(name){
+    Array.prototype.slice.call(document.querySelectorAll('.flow-step')).forEach(function(el){
+      el.classList.remove('is-active');
+    });
+    var map = {
+      catalogo:'step-catalogo', ficha:'step-ficha', mireserva:'step-mireserva',
+      datos:'step-datos', pago:'step-pago', confirmacion:'step-confirmacion'
+    };
+    var target = document.getElementById(map[name]);
+    if(target) target.classList.add('is-active');
+
+    var indicator = document.getElementById('step-indicator');
+    var dotNum = STEP_DOT[name] || 0;
+    if(indicator){
+      indicator.classList.toggle('is-hidden', dotNum === 0);
+      Array.prototype.slice.call(indicator.querySelectorAll('.step-dot')).forEach(function(dot){
+        dot.classList.toggle('active', parseInt(dot.getAttribute('data-dot'), 10) === dotNum);
+      });
+      Array.prototype.slice.call(indicator.querySelectorAll('.step-label')).forEach(function(label){
+        label.classList.toggle('active', parseInt(label.getAttribute('data-label'), 10) === dotNum);
+      });
+    }
 
     var section = document.getElementById('talleres');
     if(section) section.scrollIntoView({behavior:'smooth', block:'start'});
   }
 
-  var continueBtn = document.getElementById('btn-continue');
-  if(continueBtn){
-    continueBtn.addEventListener('click', function(){
-      if(selected.size === 0) return;
-      goToStep(2);
-    });
-  }
-  var backBtn = document.getElementById('btn-back-talleres');
-  if(backBtn){
-    backBtn.addEventListener('click', function(){ goToStep(1); });
+  document.getElementById('btn-go-mireserva').addEventListener('click', function(){
+    renderMiReserva();
+    showStep('mireserva');
+  });
+  document.getElementById('btn-back-catalogo').addEventListener('click', function(){ showStep('catalogo'); });
+  document.getElementById('btn-back-catalogo-2').addEventListener('click', function(){ showStep('catalogo'); });
+  document.getElementById('btn-add-more').addEventListener('click', function(){ showStep('catalogo'); });
+
+  document.getElementById('btn-continue').addEventListener('click', function(){
+    if(selected.size === 0) return;
+    renderReceiptInto('datos-receipt', 'datos-totals', false);
+    showStep('datos');
+  });
+  document.getElementById('btn-back-mireserva').addEventListener('click', function(){
+    renderMiReserva();
+    showStep('mireserva');
+  });
+
+  document.getElementById('btn-go-pago').addEventListener('click', function(){
+    var problems = getProblems();
+    var hint = document.getElementById('datos-hint');
+    if(problems.length){
+      if(hint){ hint.hidden = false; hint.textContent = 'Para continuar: ' + problems.join(' · ') + '.'; }
+      if(window.oasisToast) window.oasisToast(problems[0]);
+      return;
+    }
+    if(hint) hint.hidden = true;
+    var names = Array.from(selected);
+    var totalsBox = document.getElementById('pago-totals');
+    if(totalsBox) totalsBox.innerHTML = buildTotalsHTML(names.length);
+    updatePagoReadiness();
+    updateWhatsappLink();
+    showStep('pago');
+  });
+  document.getElementById('btn-back-datos').addEventListener('click', function(){ showStep('datos'); });
+
+  // ---------- Paso 5: Confirmación (retorno desde Stripe) ----------
+  function spawnConfetti(){
+    var field = document.getElementById('confetti-field');
+    if(!field) return;
+    var colors = ['#1A56E8','#E61C78','#3F8F5C','#FBF3E6'];
+    var html = '';
+    for(var i = 0; i < 18; i++){
+      var left = Math.random() * 100;
+      var delay = Math.random() * 0.3;
+      var color = colors[i % colors.length];
+      html += '<span class="confetti-piece" style="left:' + left + '%;background:' + color + ';animation-delay:' + delay + 's;"></span>';
+    }
+    field.innerHTML = html;
   }
 
-  render();
+  function renderConfirmation(data){
+    var lead = document.getElementById('confirm-lead');
+    var receiptBox = document.getElementById('confirm-receipt');
+    var totalsBox = document.getElementById('confirm-totals');
+    var items = (data && data.items) || [];
+    var names = items.map(function(it){ return it.taller; });
+
+    if(lead) lead.textContent = 'Hemos recibido tu reserva' + (data && data.child_name ? ' para ' + data.child_name : '') + '.';
+    if(receiptBox){
+      receiptBox.innerHTML = names.length ? names.map(function(n, idx){
+        var it = items[idx];
+        return '<div class="receipt-row"><div class="receipt-row-info"><strong>' + it.taller + '</strong><span>' + (it.horario || '') + ' · S/' + it.price + '</span></div></div>';
+      }).join('') : '<p class="receipt-empty">No encontramos el detalle de talleres.</p>';
+    }
+    if(totalsBox && data){
+      totalsBox.hidden = false;
+      totalsBox.innerHTML =
+        '<div class="total-row"><span>Total de la reserva</span><span>S/' + data.total + '</span></div>' +
+        '<div class="total-row"><span>Seña pagada</span><span>S/' + data.deposit + '</span></div>' +
+        '<div class="total-row balance"><span>Saldo pendiente</span><b>S/' + data.balance + '</b></div>';
+    }
+  }
+
+  function maybeShowConfirmation(){
+    var params = new URLSearchParams(window.location.search);
+    if(params.get('reserva') !== '1') return;
+    var sessionId = params.get('session_id');
+    if(!sessionId) return;
+    fetch(SUPABASE_URL + '/functions/v1/get-reservation-by-session?session_id=' + encodeURIComponent(sessionId), {
+      headers: {'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY}
+    })
+      .then(function(res){ if(!res.ok) throw new Error('no encontrada'); return res.json(); })
+      .then(function(data){
+        renderConfirmation(data);
+        showStep('confirmacion');
+        spawnConfetti();
+      })
+      .catch(function(){
+        if(window.oasisToast) window.oasisToast('No pudimos cargar el resumen, pero tu reserva quedó guardada.');
+      });
+  }
+
+  // ---------- Inicialización ----------
+  renderCategoryPills();
+  renderCatalog();
+  maybeShowConfirmation();
 })();
 </script>
