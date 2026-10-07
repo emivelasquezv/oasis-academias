@@ -1208,7 +1208,7 @@
 
   function saveReservation(){
     var names = Array.from(selected);
-    if(names.length === 0) return;
+    if(names.length === 0) return Promise.resolve(null);
 
     var total = names.length * TALLER_PRICE;
     var balance = Math.max(0, total - DEPOSIT);
@@ -1225,7 +1225,7 @@
       balance: balance
     };
 
-    fetch(SUPABASE_URL + '/rest/v1/reservations', {
+    return fetch(SUPABASE_URL + '/rest/v1/reservations', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -1239,7 +1239,7 @@
       return res.json();
     }).then(function(rows){
       var reservationId = rows && rows[0] && rows[0].id;
-      if(!reservationId) return;
+      if(!reservationId) return null;
       var itemRows = names.map(function(name){
         return {
           reservation_id: reservationId,
@@ -1256,9 +1256,10 @@
           'Authorization': 'Bearer ' + SUPABASE_KEY
         },
         body: JSON.stringify(itemRows)
-      });
+      }).then(function(){ return reservationId; });
     }).catch(function(err){
       console.error('OASIS: no se pudo guardar la reserva en el servidor', err);
+      return null;
     });
   }
 
@@ -1274,9 +1275,19 @@
     if(this.getAttribute('aria-disabled') === 'true'){
       e.preventDefault();
       if(window.oasisToast) window.oasisToast(blockedToastMessage());
-    } else {
-      saveReservation();
+      return;
     }
+    e.preventDefault();
+    var payHref = this.getAttribute('data-pay-href');
+    var payWindow = window.open('', '_blank');
+    saveReservation().then(function(reservationId){
+      var url = payHref;
+      if(reservationId){
+        url += (url.indexOf('?') === -1 ? '?' : '&') + 'client_reference_id=' + encodeURIComponent(reservationId);
+      }
+      if(payWindow) payWindow.location.href = url;
+      else window.open(url, '_blank', 'noopener');
+    });
   });
 
   ['f-child-name','f-child-age','f-parent-name','f-parent-phone','f-parent-email'].forEach(function(id){

@@ -1,0 +1,128 @@
+<title>Panel de reservas — OASIS</title>
+<meta name="robots" content="noindex, nofollow">
+<style>
+  :root{
+    --blue:#1A56E8;--magenta:#E61C78;--magenta-deep:#B5115C;--leaf:#3F8F5C;
+    --sand:#FBF3E6;--surface:#FFFFFF;--ink:#1C2B3D;--ink-soft:#4B5C70;--ink-faint:#8094A6;--border:#E7D9C2;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--sand);color:var(--ink);font-family:-apple-system,'Nunito',system-ui,sans-serif;font-size:15px;line-height:1.5;}
+  .wrap{max-width:1040px;margin:0 auto;padding:32px 20px 60px;}
+  h1{font-size:1.5rem;margin:0 0 4px;}
+  p.sub{color:var(--ink-faint);margin:0 0 28px;font-size:.92rem;}
+  .gate{max-width:320px;margin:80px auto;background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:28px;text-align:center;}
+  .gate input{width:100%;box-sizing:border-box;font-size:1rem;padding:10px 12px;border-radius:10px;border:1.5px solid var(--border);margin:14px 0;}
+  .gate button, .btn{
+    width:100%;background:var(--magenta);color:#fff;border:none;border-radius:999px;
+    padding:12px;font-weight:800;font-size:.95rem;cursor:pointer;font-family:inherit;
+  }
+  .gate .err{color:var(--magenta-deep);font-size:.84rem;font-weight:700;min-height:18px;margin-top:4px;}
+  table{width:100%;border-collapse:collapse;background:var(--surface);border-radius:14px;overflow:hidden;border:1px solid var(--border);font-size:.86rem;}
+  th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--border);vertical-align:top;}
+  th{background:var(--sand);font-size:.74rem;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-faint);}
+  tr:last-child td{border-bottom:none;}
+  .badge{display:inline-block;padding:3px 10px;border-radius:999px;font-size:.74rem;font-weight:800;}
+  .badge.pagado{background:#EAF6EE;color:#2B6B42;}
+  .badge.pendiente{background:#FFF3E0;color:#B5700E;}
+  .badge.cancelado{background:#FFE7E2;color:#C4432E;}
+  .empty{text-align:center;color:var(--ink-faint);padding:40px 0;}
+  .reload{background:none;border:1.5px solid var(--border);color:var(--ink-soft);border-radius:999px;padding:8px 16px;font-weight:800;font-size:.82rem;cursor:pointer;font-family:inherit;margin-bottom:16px;}
+  .taller-tags span{display:inline-block;background:var(--sand);border:1px solid var(--border);border-radius:999px;padding:2px 8px;font-size:.76rem;margin:0 4px 4px 0;}
+</style>
+
+<div id="gate" class="gate">
+  <h1 style="font-size:1.15rem;">Panel de reservas</h1>
+  <p class="sub" style="margin-bottom:0;">Solo para el equipo de OASIS</p>
+  <input type="password" id="secret" placeholder="Contraseña" autocomplete="off">
+  <button type="button" id="enter">Entrar</button>
+  <p class="err" id="err"></p>
+</div>
+
+<div id="panel" class="wrap" hidden>
+  <h1>Reservas — OASIS Academias</h1>
+  <p class="sub" id="count"></p>
+  <button type="button" class="reload" id="reload">Actualizar</button>
+  <div id="content"></div>
+</div>
+
+<script>
+(function(){
+  var FUNC_URL = 'https://rptbdcjhqhbyelqnnxwr.supabase.co/functions/v1/admin-reservations';
+  var gate = document.getElementById('gate');
+  var panel = document.getElementById('panel');
+  var secretInput = document.getElementById('secret');
+  var errEl = document.getElementById('err');
+  var content = document.getElementById('content');
+  var countEl = document.getElementById('count');
+
+  function fmtDate(iso){
+    try{
+      var d = new Date(iso);
+      return d.toLocaleDateString('es-PE', {day:'2-digit', month:'short', year:'numeric'}) + ' ' + d.toLocaleTimeString('es-PE', {hour:'2-digit', minute:'2-digit'});
+    }catch(e){ return iso; }
+  }
+
+  function render(reservations){
+    if(!reservations.length){
+      content.innerHTML = '<p class="empty">Todavía no hay reservas.</p>';
+      countEl.textContent = '';
+      return;
+    }
+    countEl.textContent = reservations.length + (reservations.length === 1 ? ' reserva' : ' reservas');
+    var rows = reservations.map(function(r){
+      var items = (r.reservation_items || []).map(function(it){
+        return '<span>' + it.taller + (it.horario ? ' · ' + it.horario : '') + '</span>';
+      }).join('');
+      var status = r.status || 'pendiente';
+      return '<tr>' +
+        '<td>' + fmtDate(r.created_at) + '</td>' +
+        '<td><strong>' + (r.child_name || '—') + '</strong>' + (r.child_age ? ' (' + r.child_age + ' a.)' : '') + '</td>' +
+        '<td>' + (r.parent_name || '—') + '<br><span style="color:var(--ink-faint)">' + (r.parent_phone || '') + (r.parent_email ? ' · ' + r.parent_email : '') + '</span></td>' +
+        '<td class="taller-tags">' + (items || '—') + '</td>' +
+        '<td>S/' + r.total + '<br><span style="color:var(--ink-faint)">saldo S/' + r.balance + '</span></td>' +
+        '<td><span class="badge ' + status + '">' + status + '</span></td>' +
+      '</tr>';
+    }).join('');
+    content.innerHTML =
+      '<table><thead><tr><th>Fecha</th><th>Niño/a</th><th>Apoderado</th><th>Talleres</th><th>Monto</th><th>Estado</th></tr></thead>' +
+      '<tbody>' + rows + '</tbody></table>';
+  }
+
+  function load(secret){
+    errEl.textContent = '';
+    return fetch(FUNC_URL, { headers: { 'x-admin-secret': secret } })
+      .then(function(res){
+        if(res.status === 401) throw new Error('Contraseña incorrecta');
+        if(!res.ok) throw new Error('No se pudo cargar (error ' + res.status + ')');
+        return res.json();
+      })
+      .then(function(data){
+        try{ sessionStorage.setItem('oasis-admin-secret', secret); }catch(e){}
+        gate.hidden = true;
+        panel.hidden = false;
+        render(data.reservations || []);
+      })
+      .catch(function(err){
+        errEl.textContent = err.message;
+      });
+  }
+
+  document.getElementById('enter').addEventListener('click', function(){
+    var v = secretInput.value.trim();
+    if(!v){ errEl.textContent = 'Escribe la contraseña'; return; }
+    load(v);
+  });
+  secretInput.addEventListener('keydown', function(e){
+    if(e.key === 'Enter') document.getElementById('enter').click();
+  });
+  document.getElementById('reload').addEventListener('click', function(){
+    var saved = sessionStorage.getItem('oasis-admin-secret');
+    if(saved) load(saved);
+  });
+
+  try{
+    var saved = sessionStorage.getItem('oasis-admin-secret');
+    if(saved) load(saved);
+  }catch(e){}
+})();
+</script>
