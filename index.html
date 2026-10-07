@@ -1410,8 +1410,10 @@
     var total = names.length * TALLER_PRICE;
     var balance = Math.max(0, total - DEPOSIT);
     var ageRaw = fieldVal('f-child-age');
+    var reservationId = crypto.randomUUID();
 
     var payload = {
+      id: reservationId,
       child_name: fieldVal('f-child-name'),
       child_age: ageRaw ? parseInt(ageRaw, 10) : null,
       parent_name: fieldVal('f-parent-name') || null,
@@ -1422,21 +1424,19 @@
       balance: balance
     };
 
+    // No pedimos 'Prefer: return=representation': anon solo tiene permiso de
+    // INSERT (sin SELECT) sobre estas tablas, así que generamos el id en el
+    // cliente en vez de depender de que el servidor lo devuelva.
     return fetch(SUPABASE_URL + '/rest/v1/reservations', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'apikey': SUPABASE_KEY,
-        'Authorization': 'Bearer ' + SUPABASE_KEY,
-        'Prefer': 'return=representation'
+        'Authorization': 'Bearer ' + SUPABASE_KEY
       },
       body: JSON.stringify(payload)
     }).then(function(res){
       if(!res.ok) throw new Error('reservations insert failed: ' + res.status);
-      return res.json();
-    }).then(function(rows){
-      var reservationId = rows && rows[0] && rows[0].id;
-      if(!reservationId) return null;
       var itemRows = names.map(function(name){
         return {
           reservation_id: reservationId,
