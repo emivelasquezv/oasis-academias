@@ -231,68 +231,92 @@
   .p6{--c1:#F1E9FF;--c2:#E2D3FF;--c3:#6B3FA0;}
   .p7{--c1:#E0F5F5;--c2:#C6EBEA;--c3:#0E7A7A;}
 
-  .taller-scroll{position:relative;max-width:640px;margin-inline:auto;}
+  .taller-scroll{position:relative;max-width:100%;}
   .taller-scroll::after{
-    content:"";position:absolute;left:0;right:6px;bottom:0;height:36px;
-    background:linear-gradient(180deg, transparent, var(--surface));
-    pointer-events:none;border-radius:0 0 18px 18px;
+    content:"";position:absolute;top:0;right:0;bottom:16px;width:40px;
+    background:linear-gradient(90deg, transparent, var(--surface));
+    pointer-events:none;
   }
   .taller-list{
-    display:flex;flex-direction:column;gap:12px;
-    max-height:520px;overflow-y:auto;overflow-x:hidden;
-    padding:4px 10px 4px 4px;margin:-4px -10px -4px -4px;
+    display:flex;flex-direction:row;align-items:flex-start;gap:12px;
+    overflow-x:auto;overflow-y:visible;
+    scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;
+    padding:4px 36px 16px 4px;
     scrollbar-width:thin;scrollbar-color:var(--magenta) var(--sand-alt);
   }
-  .taller-list::-webkit-scrollbar{width:8px;}
+  .taller-list::-webkit-scrollbar{height:8px;}
   .taller-list::-webkit-scrollbar-track{background:var(--sand-alt);border-radius:999px;}
-  .taller-list::-webkit-scrollbar-thumb{background:linear-gradient(180deg,var(--blue),var(--magenta));border-radius:999px;}
+  .taller-list::-webkit-scrollbar-thumb{background:linear-gradient(90deg,var(--blue),var(--magenta));border-radius:999px;}
   .taller-list::-webkit-scrollbar-thumb:hover{background:var(--magenta);}
   .taller-item{
-    flex-shrink:0;
+    flex:0 0 164px;scroll-snap-align:start;
     border-radius:18px;background:var(--surface);border:1.5px solid var(--border);
     overflow:hidden;transition:border-color .15s ease;
   }
   .taller-item.selected{border-color:var(--c3);}
   .taller-item.conflict{border-color:var(--magenta);}
   .taller-row{
-    all:revert;appearance:none;background:none;border:none;font:inherit;text-align:left;cursor:pointer;
-    display:flex;align-items:center;gap:14px;width:100%;box-sizing:border-box;padding:14px 16px;
+    all:revert;appearance:none;background:none;border:none;font:inherit;text-align:center;cursor:pointer;
+    position:relative;
+    display:flex;flex-direction:column;align-items:center;gap:8px;width:100%;box-sizing:border-box;padding:18px 12px 16px;
   }
   .tr-icon-wrap{
     flex:none;width:44px;height:44px;border-radius:50%;background:var(--c1);
     display:flex;align-items:center;justify-content:center;
   }
   .tr-icon-wrap svg{width:22px;height:22px;color:var(--c3);}
-  .tr-text{flex:1;display:flex;flex-direction:column;gap:2px;min-width:0;}
-  .tr-text strong{font-size:1rem;color:var(--ink);font-weight:800;}
-  .tr-text span{font-size:.82rem;color:var(--ink-faint);font-weight:700;}
+  .tr-text{display:flex;flex-direction:column;gap:2px;align-items:center;text-align:center;}
+  .tr-text strong{font-size:.92rem;color:var(--ink);font-weight:800;line-height:1.2;}
+  .tr-text span{font-size:.78rem;color:var(--ink-faint);font-weight:700;}
   .tr-toggle{
-    flex:none;width:26px;height:26px;border-radius:50%;border:2px solid var(--border);
-    display:flex;align-items:center;justify-content:center;color:transparent;
+    position:absolute;top:10px;right:10px;
+    flex:none;width:24px;height:24px;border-radius:50%;border:2px solid var(--border);
+    display:flex;align-items:center;justify-content:center;color:transparent;background:var(--surface);
     transition:background .15s ease, border-color .15s ease, color .15s ease;
   }
-  .tr-toggle svg{width:14px;height:14px;}
+  .tr-toggle svg{width:13px;height:13px;}
   .taller-item.selected .tr-toggle{background:var(--c3);border-color:var(--c3);color:#fff;}
-  .taller-panel{max-height:0;overflow:hidden;padding:0 16px;transition:max-height .25s ease;}
-  .taller-item.selected .taller-panel{max-height:220px;padding:0 16px 16px;}
+  .taller-panel{max-height:0;overflow:hidden;padding:0 12px;transition:max-height .25s ease;}
+  .taller-item.selected .taller-panel{max-height:220px;padding:0 12px 16px;}
   .taller-panel-label{display:block;font-size:.76rem;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-faint);margin:0 0 8px;}
   .horario-select{
-    width:100%;box-sizing:border-box;font-family:'Nunito',sans-serif;font-weight:700;font-size:.9rem;
+    width:100%;box-sizing:border-box;font-family:'Nunito',sans-serif;font-weight:700;font-size:.82rem;
     color:var(--ink);background:var(--sand);border:1.5px solid var(--border);border-radius:10px;
-    padding:10px 12px;cursor:pointer;
+    padding:9px 10px;cursor:pointer;
   }
   .taller-item.conflict .horario-select{border-color:var(--magenta);}
   .taller-conflict{
-    margin:8px 0 0;font-size:.82rem;font-weight:800;color:var(--magenta-deep);
-    display:flex;gap:6px;align-items:flex-start;
+    margin:8px 0 0;font-size:.74rem;font-weight:800;color:var(--magenta-deep);
+    display:flex;gap:5px;align-items:flex-start;text-align:left;
   }
-  .taller-conflict svg{flex:none;width:16px;height:16px;margin-top:1px;}
+  .taller-conflict svg{flex:none;width:14px;height:14px;margin-top:1px;}
+
+  .step-indicator{display:flex;align-items:center;gap:8px;margin-bottom:22px;}
+  .step-dot{
+    width:24px;height:24px;border-radius:50%;background:var(--sand-alt);color:var(--ink-faint);
+    font-family:'Nunito',sans-serif;font-size:.76rem;font-weight:800;
+    display:flex;align-items:center;justify-content:center;flex:none;
+    transition:background .15s ease,color .15s ease;
+  }
+  .step-dot.active{background:var(--magenta);color:#fff;}
+  .step-label{font-size:.82rem;font-weight:800;color:var(--ink-faint);transition:color .15s ease;}
+  .step-label.active{color:var(--ink);}
+  .step-line{flex:1;height:1px;background:var(--border);}
+  .btn-continue{width:100%;margin-top:clamp(20px,3vw,28px);}
+  .btn:disabled{opacity:.45;cursor:not-allowed;box-shadow:none;}
+  .btn:disabled:hover{transform:none;}
+  .step-back{
+    display:inline-flex;align-items:center;gap:6px;background:none;border:none;cursor:pointer;
+    color:var(--blue);font-family:'Nunito',sans-serif;font-weight:800;font-size:.86rem;padding:0;margin-bottom:16px;
+  }
+  .step-back:hover{text-decoration:underline;}
 
   .talleres-footer{
     margin-top:clamp(28px,4vw,40px);max-width:640px;margin-inline:auto;
     display:flex;flex-direction:column;gap:16px;
     background:var(--sand);border:1px solid var(--border);border-radius:20px;padding:20px;
   }
+  .talleres-footer[hidden]{display:none;}
   .talleres-footer > .btn{width:100%;}
   .receipt-title{margin:0 2px;font-size:.78rem;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-faint);}
   .receipt{display:flex;flex-direction:column;gap:8px;}
@@ -325,7 +349,17 @@
   /* ---------- Gallery ---------- */
   .gallery-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:28px;}
   @media (max-width:820px){.gallery-grid{grid-template-columns:1fr 1fr;}}
-  @media (max-width:520px){.gallery-grid{grid-template-columns:1fr;}}
+  @media (max-width:520px){
+    .gallery-grid{
+      display:flex;gap:14px;overflow-x:auto;scroll-snap-type:x mandatory;
+      -webkit-overflow-scrolling:touch;padding-bottom:10px;
+      scrollbar-width:thin;scrollbar-color:var(--magenta) var(--sand-alt);
+    }
+    .gallery-grid::-webkit-scrollbar{height:8px;}
+    .gallery-grid::-webkit-scrollbar-track{background:var(--sand-alt);border-radius:999px;}
+    .gallery-grid::-webkit-scrollbar-thumb{background:linear-gradient(90deg,var(--blue),var(--magenta));border-radius:999px;}
+    .gallery-grid .gallery-item{flex:0 0 78%;scroll-snap-align:start;}
+  }
   .gallery-item{
     position:relative;aspect-ratio:3/4;overflow:hidden;
     border-radius:130px 130px 16px 16px;
@@ -619,10 +653,19 @@
   <!-- TALLERES -->
   <section class="programs" id="talleres">
     <div class="wrap">
+      <div class="step-indicator">
+        <span class="step-dot active" id="step-dot-1">1</span>
+        <span class="step-label active" id="step-label-1">Talleres</span>
+        <span class="step-line"></span>
+        <span class="step-dot" id="step-dot-2">2</span>
+        <span class="step-label" id="step-label-2">Datos y pago</span>
+      </div>
+
+      <div id="step-talleres">
       <div class="section-head">
         <div class="eyebrow">Talleres y horario</div>
         <h2>Arma la reserva de tu hij@</h2>
-        <p>Toca un taller para elegirlo y ponerle horario — todo en un solo paso. Puedes elegir más de uno.</p>
+        <p>Desliza para ver los 7 — toca uno para elegirlo y ponerle horario. Puedes elegir más de uno.</p>
       </div>
 
       <div class="taller-scroll">
@@ -722,7 +765,14 @@
       </div>
       </div>
 
-      <div class="talleres-footer" id="reserva">
+      <button type="button" class="btn btn-primary btn-continue" id="btn-continue" disabled>Elige al menos un taller</button>
+      </div>
+
+      <div class="talleres-footer" id="reserva" hidden>
+        <button type="button" class="step-back" id="btn-back-talleres">
+          <svg viewBox="0 0 24 24" fill="none" width="16" height="16"><path d="M15 6l-6 6 6 6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Editar talleres
+        </button>
         <p class="receipt-title">Tu reserva</p>
         <div id="talleres-receipt" class="receipt"></div>
         <div id="receipt-totals" class="receipt-totals" hidden></div>
@@ -1078,6 +1128,13 @@
           '<div class="total-row balance"><span>Saldo restante</span><b>S/' + balance + '</b></div>';
       }
     }
+
+    var continueBtn = document.getElementById('btn-continue');
+    if(continueBtn){
+      continueBtn.disabled = names.length === 0;
+      continueBtn.textContent = names.length === 0 ? 'Elige al menos un taller' : 'Continuar (' + names.length + (names.length === 1 ? ' taller' : ' talleres') + ')';
+    }
+
     updateMailto();
   }
 
@@ -1248,6 +1305,38 @@
       render();
     });
   });
+
+  function goToStep(step){
+    var stepTalleres = document.getElementById('step-talleres');
+    var stepReserva = document.getElementById('reserva');
+    var dot1 = document.getElementById('step-dot-1');
+    var dot2 = document.getElementById('step-dot-2');
+    var label1 = document.getElementById('step-label-1');
+    var label2 = document.getElementById('step-label-2');
+    if(!stepTalleres || !stepReserva) return;
+
+    stepTalleres.hidden = step !== 1;
+    stepReserva.hidden = step !== 2;
+    if(dot1) dot1.classList.toggle('active', step === 1);
+    if(dot2) dot2.classList.toggle('active', step === 2);
+    if(label1) label1.classList.toggle('active', step === 1);
+    if(label2) label2.classList.toggle('active', step === 2);
+
+    var section = document.getElementById('talleres');
+    if(section) section.scrollIntoView({behavior:'smooth', block:'start'});
+  }
+
+  var continueBtn = document.getElementById('btn-continue');
+  if(continueBtn){
+    continueBtn.addEventListener('click', function(){
+      if(selected.size === 0) return;
+      goToStep(2);
+    });
+  }
+  var backBtn = document.getElementById('btn-back-talleres');
+  if(backBtn){
+    backBtn.addEventListener('click', function(){ goToStep(1); });
+  }
 
   render();
 })();
