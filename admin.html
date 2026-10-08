@@ -49,6 +49,12 @@
   .save-msg{font-size:.82rem;font-weight:700;min-height:18px;}
   .save-msg.ok{color:#2B6B42;}
   .save-msg.err{color:var(--magenta-deep);}
+  .delete-btn{
+    background:none;border:1.5px solid var(--border);color:var(--magenta-deep);border-radius:999px;
+    padding:6px 12px;font-weight:800;font-size:.78rem;cursor:pointer;font-family:inherit;
+  }
+  .delete-btn:hover{background:#FFE7E2;border-color:#F5C4B8;}
+  .delete-btn:disabled{opacity:.5;cursor:wait;}
 </style>
 
 <div id="gate" class="gate">
@@ -162,7 +168,7 @@
 
     var table = document.createElement('table');
     var thead = document.createElement('thead');
-    thead.innerHTML = '<tr><th>Fecha</th><th>Niño/a</th><th>Apoderado</th><th>Talleres</th><th>Monto</th><th>Seña</th><th>Saldo</th></tr>';
+    thead.innerHTML = '<tr><th>Fecha</th><th>Niño/a</th><th>Apoderado</th><th>Talleres</th><th>Monto</th><th>Seña</th><th>Saldo</th><th></th></tr>';
     table.appendChild(thead);
     var tbody = document.createElement('tbody');
 
@@ -195,6 +201,31 @@
       var tdBalanceStatus = document.createElement('td');
       tdBalanceStatus.appendChild(statusSelect(r.id, 'balance_status', r.balance_status || 'pendiente', ['pendiente', 'solicitado', 'pagado']));
 
+      var tdActions = document.createElement('td');
+      var deleteBtn = document.createElement('button');
+      deleteBtn.type = 'button';
+      deleteBtn.className = 'delete-btn';
+      deleteBtn.textContent = 'Eliminar';
+      deleteBtn.addEventListener('click', function(){
+        var label = (r.child_name || 'esta reserva');
+        if(!confirm('¿Eliminar la reserva de ' + label + '? Esta acción no se puede deshacer.')) return;
+        deleteBtn.disabled = true;
+        postAction({ action: 'delete_reservation', reservation_id: r.id })
+          .then(function(){
+            tr.remove();
+            var remaining = tbody.querySelectorAll('tr').length;
+            countEl.textContent = remaining + (remaining === 1 ? ' reserva' : ' reservas');
+            if(remaining === 0){
+              content.innerHTML = '<p class="empty">Todavía no hay reservas.</p>';
+            }
+          })
+          .catch(function(err){
+            deleteBtn.disabled = false;
+            alert('No se pudo eliminar: ' + err.message);
+          });
+      });
+      tdActions.appendChild(deleteBtn);
+
       tr.appendChild(tdFecha);
       tr.appendChild(tdNino);
       tr.appendChild(tdApoderado);
@@ -202,6 +233,7 @@
       tr.appendChild(tdMonto);
       tr.appendChild(tdStatus);
       tr.appendChild(tdBalanceStatus);
+      tr.appendChild(tdActions);
       tbody.appendChild(tr);
     });
 
