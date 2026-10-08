@@ -7,27 +7,48 @@
   }
   *{box-sizing:border-box;}
   body{margin:0;background:var(--sand);color:var(--ink);font-family:-apple-system,'Nunito',system-ui,sans-serif;font-size:15px;line-height:1.5;}
-  .wrap{max-width:1040px;margin:0 auto;padding:32px 20px 60px;}
+  .wrap{max-width:1100px;margin:0 auto;padding:32px 20px 60px;}
   h1{font-size:1.5rem;margin:0 0 4px;}
   p.sub{color:var(--ink-faint);margin:0 0 28px;font-size:.92rem;}
   .gate{max-width:320px;margin:80px auto;background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:28px;text-align:center;}
   .gate input{width:100%;box-sizing:border-box;font-size:1rem;padding:10px 12px;border-radius:10px;border:1.5px solid var(--border);margin:14px 0;}
   .gate button, .btn{
-    width:100%;background:var(--magenta);color:#fff;border:none;border-radius:999px;
+    background:var(--magenta);color:#fff;border:none;border-radius:999px;
     padding:12px;font-weight:800;font-size:.95rem;cursor:pointer;font-family:inherit;
   }
+  .gate button{width:100%;}
+  .btn:disabled{opacity:.5;cursor:not-allowed;}
   .gate .err{color:var(--magenta-deep);font-size:.84rem;font-weight:700;min-height:18px;margin-top:4px;}
   table{width:100%;border-collapse:collapse;background:var(--surface);border-radius:14px;overflow:hidden;border:1px solid var(--border);font-size:.86rem;}
   th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--border);vertical-align:top;}
   th{background:var(--sand);font-size:.74rem;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-faint);}
   tr:last-child td{border-bottom:none;}
-  .badge{display:inline-block;padding:3px 10px;border-radius:999px;font-size:.74rem;font-weight:800;}
-  .badge.pagado{background:#EAF6EE;color:#2B6B42;}
-  .badge.pendiente{background:#FFF3E0;color:#B5700E;}
-  .badge.cancelado{background:#FFE7E2;color:#C4432E;}
+  select.status-select{
+    font-family:inherit;font-size:.8rem;font-weight:800;padding:5px 8px;border-radius:999px;
+    border:1.5px solid var(--border);background:var(--sand);color:var(--ink-soft);cursor:pointer;
+  }
+  select.status-select.pagado{background:#EAF6EE;color:#2B6B42;border-color:#BFE3CB;}
+  select.status-select.pendiente{background:#FFF3E0;color:#B5700E;border-color:#F3DCA8;}
+  select.status-select.cancelado{background:#FFE7E2;color:#C4432E;border-color:#F5C4B8;}
+  select.status-select.solicitado{background:#EAF1FF;color:#1A56E8;border-color:#C6D7FA;}
+  select.status-select[disabled]{opacity:.5;cursor:wait;}
   .empty{text-align:center;color:var(--ink-faint);padding:40px 0;}
-  .reload{background:none;border:1.5px solid var(--border);color:var(--ink-soft);border-radius:999px;padding:8px 16px;font-weight:800;font-size:.82rem;cursor:pointer;font-family:inherit;margin-bottom:16px;}
+  .reload{background:none;border:1.5px solid var(--border);color:var(--ink-soft);border-radius:999px;padding:8px 16px;font-weight:800;font-size:.82rem;cursor:pointer;font-family:inherit;}
+  .toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:16px;}
   .taller-tags span{display:inline-block;background:var(--sand);border:1px solid var(--border);border-radius:999px;padding:2px 8px;font-size:.76rem;margin:0 4px 4px 0;}
+  .settings-card{
+    background:var(--surface);border:1px solid var(--border);border-radius:14px;
+    padding:18px 20px;margin-bottom:24px;display:flex;align-items:flex-end;gap:14px;flex-wrap:wrap;
+  }
+  .settings-card .field{display:flex;flex-direction:column;gap:6px;}
+  .settings-card label{font-size:.74rem;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-faint);font-weight:800;}
+  .settings-card input[type="date"]{
+    font-family:inherit;font-size:.92rem;padding:9px 10px;border-radius:10px;border:1.5px solid var(--border);
+  }
+  .settings-card .hint{color:var(--ink-faint);font-size:.82rem;margin:0;flex:1 1 220px;}
+  .save-msg{font-size:.82rem;font-weight:700;min-height:18px;}
+  .save-msg.ok{color:#2B6B42;}
+  .save-msg.err{color:var(--magenta-deep);}
 </style>
 
 <div id="gate" class="gate">
@@ -41,7 +62,20 @@
 <div id="panel" class="wrap" hidden>
   <h1>Reservas — OASIS Academias</h1>
   <p class="sub" id="count"></p>
-  <button type="button" class="reload" id="reload">Actualizar</button>
+
+  <div class="settings-card">
+    <div class="field">
+      <label for="classStartDate">Fecha de inicio de clases</label>
+      <input type="date" id="classStartDate">
+    </div>
+    <button type="button" class="btn" id="saveSettings">Guardar fecha</button>
+    <p class="hint">El recordatorio de saldo se envía automáticamente 7 días antes de esta fecha.</p>
+    <p class="save-msg" id="settingsMsg"></p>
+  </div>
+
+  <div class="toolbar">
+    <button type="button" class="reload" id="reload">Actualizar</button>
+  </div>
   <div id="content"></div>
 </div>
 
@@ -54,12 +88,68 @@
   var errEl = document.getElementById('err');
   var content = document.getElementById('content');
   var countEl = document.getElementById('count');
+  var classStartDateInput = document.getElementById('classStartDate');
+  var saveSettingsBtn = document.getElementById('saveSettings');
+  var settingsMsg = document.getElementById('settingsMsg');
+
+  var currentSecret = null;
 
   function fmtDate(iso){
     try{
       var d = new Date(iso);
       return d.toLocaleDateString('es-PE', {day:'2-digit', month:'short', year:'numeric'}) + ' ' + d.toLocaleTimeString('es-PE', {hour:'2-digit', minute:'2-digit'});
     }catch(e){ return iso; }
+  }
+
+  function showMsg(el, text, isError){
+    el.textContent = text;
+    el.className = 'save-msg ' + (isError ? 'err' : 'ok');
+    setTimeout(function(){
+      if(el.textContent === text) el.textContent = '';
+    }, 3000);
+  }
+
+  function postAction(payload){
+    return fetch(FUNC_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-admin-secret': currentSecret },
+      body: JSON.stringify(payload)
+    }).then(function(res){
+      return res.json().then(function(data){
+        if(!res.ok || data.error) throw new Error(data.error || ('Error ' + res.status));
+        return data;
+      });
+    });
+  }
+
+  function statusSelect(reservationId, field, value, options){
+    var select = document.createElement('select');
+    select.className = 'status-select ' + value;
+    options.forEach(function(opt){
+      var o = document.createElement('option');
+      o.value = opt;
+      o.textContent = opt.charAt(0).toUpperCase() + opt.slice(1);
+      if(opt === value) o.selected = true;
+      select.appendChild(o);
+    });
+    select.addEventListener('change', function(){
+      var newValue = select.value;
+      var previous = value;
+      select.disabled = true;
+      postAction({ action: 'update_status', reservation_id: reservationId, field: field, value: newValue })
+        .then(function(){
+          select.className = 'status-select ' + newValue;
+          value = newValue;
+        })
+        .catch(function(err){
+          select.value = previous;
+          alert('No se pudo actualizar: ' + err.message);
+        })
+        .finally(function(){
+          select.disabled = false;
+        });
+    });
+    return select;
   }
 
   function render(reservations){
@@ -69,23 +159,55 @@
       return;
     }
     countEl.textContent = reservations.length + (reservations.length === 1 ? ' reserva' : ' reservas');
-    var rows = reservations.map(function(r){
+
+    var table = document.createElement('table');
+    var thead = document.createElement('thead');
+    thead.innerHTML = '<tr><th>Fecha</th><th>Niño/a</th><th>Apoderado</th><th>Talleres</th><th>Monto</th><th>Seña</th><th>Saldo</th></tr>';
+    table.appendChild(thead);
+    var tbody = document.createElement('tbody');
+
+    reservations.forEach(function(r){
+      var tr = document.createElement('tr');
+
       var items = (r.reservation_items || []).map(function(it){
         return '<span>' + it.taller + (it.horario ? ' · ' + it.horario : '') + '</span>';
       }).join('');
-      var status = r.status || 'pendiente';
-      return '<tr>' +
-        '<td>' + fmtDate(r.created_at) + '</td>' +
-        '<td><strong>' + (r.child_name || '—') + '</strong>' + (r.child_age ? ' (' + r.child_age + ' a.)' : '') + '</td>' +
-        '<td>' + (r.parent_name || '—') + '<br><span style="color:var(--ink-faint)">' + (r.parent_phone || '') + (r.parent_email ? ' · ' + r.parent_email : '') + '</span></td>' +
-        '<td class="taller-tags">' + (items || '—') + '</td>' +
-        '<td>S/' + r.total + '<br><span style="color:var(--ink-faint)">saldo S/' + r.balance + '</span></td>' +
-        '<td><span class="badge ' + status + '">' + status + '</span></td>' +
-      '</tr>';
-    }).join('');
-    content.innerHTML =
-      '<table><thead><tr><th>Fecha</th><th>Niño/a</th><th>Apoderado</th><th>Talleres</th><th>Monto</th><th>Estado</th></tr></thead>' +
-      '<tbody>' + rows + '</tbody></table>';
+
+      var tdFecha = document.createElement('td');
+      tdFecha.textContent = fmtDate(r.created_at);
+
+      var tdNino = document.createElement('td');
+      tdNino.innerHTML = '<strong>' + (r.child_name || '—') + '</strong>' + (r.child_age ? ' (' + r.child_age + ' a.)' : '');
+
+      var tdApoderado = document.createElement('td');
+      tdApoderado.innerHTML = (r.parent_name || '—') + '<br><span style="color:var(--ink-faint)">' + (r.parent_phone || '') + (r.parent_email ? ' · ' + r.parent_email : '') + '</span>';
+
+      var tdTalleres = document.createElement('td');
+      tdTalleres.className = 'taller-tags';
+      tdTalleres.innerHTML = items || '—';
+
+      var tdMonto = document.createElement('td');
+      tdMonto.innerHTML = 'S/' + r.total + '<br><span style="color:var(--ink-faint)">saldo S/' + r.balance + '</span>';
+
+      var tdStatus = document.createElement('td');
+      tdStatus.appendChild(statusSelect(r.id, 'status', r.status || 'pendiente', ['pendiente', 'pagado', 'cancelado']));
+
+      var tdBalanceStatus = document.createElement('td');
+      tdBalanceStatus.appendChild(statusSelect(r.id, 'balance_status', r.balance_status || 'pendiente', ['pendiente', 'solicitado', 'pagado']));
+
+      tr.appendChild(tdFecha);
+      tr.appendChild(tdNino);
+      tr.appendChild(tdApoderado);
+      tr.appendChild(tdTalleres);
+      tr.appendChild(tdMonto);
+      tr.appendChild(tdStatus);
+      tr.appendChild(tdBalanceStatus);
+      tbody.appendChild(tr);
+    });
+
+    table.appendChild(tbody);
+    content.innerHTML = '';
+    content.appendChild(table);
   }
 
   function load(secret){
@@ -98,9 +220,13 @@
       })
       .then(function(data){
         try{ sessionStorage.setItem('oasis-admin-secret', secret); }catch(e){}
+        currentSecret = secret;
         gate.hidden = true;
         panel.hidden = false;
         render(data.reservations || []);
+        if(data.settings && data.settings.class_start_date){
+          classStartDateInput.value = data.settings.class_start_date;
+        }
       })
       .catch(function(err){
         errEl.textContent = err.message;
@@ -116,8 +242,26 @@
     if(e.key === 'Enter') document.getElementById('enter').click();
   });
   document.getElementById('reload').addEventListener('click', function(){
-    var saved = sessionStorage.getItem('oasis-admin-secret');
-    if(saved) load(saved);
+    if(currentSecret) load(currentSecret);
+  });
+
+  saveSettingsBtn.addEventListener('click', function(){
+    var dateVal = classStartDateInput.value;
+    if(!dateVal){
+      showMsg(settingsMsg, 'Elige una fecha', true);
+      return;
+    }
+    saveSettingsBtn.disabled = true;
+    postAction({ action: 'update_settings', class_start_date: dateVal })
+      .then(function(){
+        showMsg(settingsMsg, 'Guardado', false);
+      })
+      .catch(function(err){
+        showMsg(settingsMsg, err.message, true);
+      })
+      .finally(function(){
+        saveSettingsBtn.disabled = false;
+      });
   });
 
   try{
