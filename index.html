@@ -884,7 +884,7 @@
       <div class="contact-grid">
         <ul class="contact-list">
           <li>
-            <span class="icon-badge"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 21s-7-4.7-7-10.5A7 7 0 0 1 19 10.5C19 16.3 12 21 12 21Z" stroke="currentColor" stroke-width="1.6"/><circle cx="12" cy="10.5" r="2.4" stroke="currentColor" stroke-width="1.6"/></svg></span>
+            <span class="icon-badge"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 21s-7-4.7-7-10.5A7 7 0 0 1 19 10.5C19 16.3 12 21 12 21Z" stro-width="1.6"/><circle cx="12" cy="10.5" r="2.4" stroke="currentColor" stroke-width="1.6"/></svg></span>
             <a href="https://www.google.com/maps/search/?api=1&query=-16.3831094,-71.5352808" target="_blank" rel="noopener">Jardín Secreto, Yanahuara, Arequipa</a>
           </li>
           <li>
@@ -1097,33 +1097,31 @@
 
   var CATEGORIES = [
     {id:'todos', label:'Todos'},
-    {id:'arte', label:'Arte'},
-    {id:'movimiento', label:'Movimiento'},
-    {id:'ajedrez', label:'Ajedrez'},
-    {id:'idiomas', label:'Idiomas'},
-    {id:'primera-infancia', label:'Primera infancia'}
+    {id:'expresion', label:'🎭 Expresión y Creatividad'},
+    {id:'aprendizaje', label:'🧠 Aprendizaje y Conocimiento'},
+    {id:'desarrollo', label:'🌱 Desarrollo Infantil'}
   ];
 
   var TALLERES = [
-    {name:'Estimulación Temprana', cls:'p1', cat:'primera-infancia', age:'Bebés – 2 años', duration:'1 hora', photo:'assets/taller-estimulacion.jpg',
+    {name:'Estimulación Temprana', cls:'p1', cat:'desarrollo', age:'Bebés – 2 años', duration:'1 hora', photo:'assets/taller-estimulacion.jpg', pos:'top',
       desc:'Un espacio sensorial para que los más pequeños exploren, se muevan y descubran el mundo jugando, acompañados por su cuidador.',
       bullets:['Juego sensorial y motor','Música y estimulación temprana','Acompañado por mamá, papá o cuidador']},
-    {name:'Dibujo y Pintura', cls:'p2', cat:'arte', age:'3 – 11 años', duration:'1 hora', photo:'assets/taller-pintura.jpg',
+    {name:'Dibujo y Pintura', cls:'p2', cat:'expresion', age:'3 – 11 años', duration:'1 hora', photo:'assets/taller-pintura.jpg',
       desc:'Un espacio para experimentar con colores, formas y diferentes técnicas artísticas mientras desarrollan su creatividad.',
       bullets:['Pintura y manualidades','Técnicas artísticas variadas','Proyecto creativo propio']},
-    {name:'Marinera', cls:'p3', cat:'movimiento', age:'3 – 16 años', duration:'1 hora', photo:'assets/taller-marinera.jpg',
+    {name:'Marinera', cls:'p3', cat:'expresion', age:'3 – 16 años', duration:'1 hora', photo:'assets/taller-marinera.jpg',
       desc:'Aprenden los pasos y el espíritu de la marinera peruana, ganando ritmo, postura y confianza en el escenario.',
       bullets:['Pasos básicos de marinera','Trabajo de ritmo y postura','Muestra final para la familia']},
-    {name:'Ajedrez', cls:'p4', cat:'ajedrez', age:'6 – 16 años', duration:'1 hora', photo:'assets/taller-ajedrez.jpg',
+    {name:'Ajedrez', cls:'p4', cat:'aprendizaje', age:'6 – 16 años', duration:'1 hora', photo:'assets/taller-ajedrez.jpg',
       desc:'Desarrollan pensamiento estratégico y paciencia mientras aprenden a jugar ajedrez paso a paso, desde lo básico hasta tácticas sencillas.',
       bullets:['Movimientos y reglas del juego','Ejercicios de táctica','Partidas guiadas entre compañeros']},
-    {name:'Modelaje', cls:'p5', cat:'arte', age:'7 – 16 años', duration:'1 hora', photo:'assets/taller-modelaje.jpg',
+    {name:'Modelaje', cls:'p5', cat:'expresion', age:'7 – 16 años', duration:'1 hora', photo:'assets/taller-modelaje.jpg',
       desc:'Trabajan postura, expresión corporal y seguridad escénica en un ambiente divertido y respetuoso.',
       bullets:['Postura y caminata','Expresión frente a cámara','Seguridad y confianza escénica']},
-    {name:'Baile Moderno', cls:'p6', cat:'movimiento', age:'6 – 16 años', duration:'1 hora', photo:'assets/taller-baile-moderno.jpg',
+    {name:'Baile Moderno', cls:'p6', cat:'expresion', age:'6 – 16 años', duration:'1 hora', photo:'assets/taller-baile-moderno.jpg',
       desc:'Coreografías dinámicas al ritmo de música actual, para soltarse, moverse y trabajar en equipo.',
       bullets:['Coreografía grupal','Calentamiento y ritmo','Presentación final']},
-    {name:'Inglés', cls:'p7', cat:'idiomas', age:'3 – 16 años', duration:'1 hora', photo:'assets/photo1.jpg',
+    {name:'Inglés', cls:'p7', cat:'aprendizaje', age:'3 – 16 años', duration:'1 hora', photo:'assets/taller-ingles.jpg',
       desc:'Aprenden inglés de forma lúdica, con canciones, juegos y conversación sencilla adaptada a su edad.',
       bullets:['Vocabulario y frases básicas','Canciones y juegos en inglés','Práctica de conversación simple']}
   ];
@@ -1212,7 +1210,7 @@
       var isSelected = selected.has(t.name);
       return '<button type="button" class="catalog-card ' + t.cls + (isSelected ? ' selected' : '') + '" data-taller="' + t.name + '">' +
         '<span class="catalog-card-photo">' +
-          '<img src="' + t.photo + '" alt="' + t.name + '" loading="lazy">' +
+          '<img src="' + t.photo + '" alt="' + t.name + '" loading="lazy"' + (t.pos ? ' style="object-position:center ' + t.pos + '"' : '') + '>' +
           '<span class="catalog-card-tag">' + catLabel + '</span>' +
           '<span class="catalog-card-check"><svg viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4 10-10" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span>' +
         '</span>' +
@@ -1266,7 +1264,7 @@
 
     box.className = t.cls;
     box.innerHTML =
-      '<img class="ficha-photo" src="' + t.photo + '" alt="' + t.name + '">' +
+      '<img class="ficha-photo" src="' + t.photo + '" alt="' + t.name + '"' + (t.pos ? ' style="object-position:center ' + t.pos + '"' : '') + '>' +
       '<div class="ficha-head"><h2>' + t.name + '</h2><span class="ficha-tag">' + catLabel + '</span></div>' +
       '<div class="ficha-meta">' +
         '<span class="ficha-meta-item"><svg viewBox="0 0 24 24" fill="none"><path d="M12 21s-7-4.5-7-10a7 7 0 0 1 14 0c0 5.5-7 10-7 10Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><circle cx="12" cy="10.5" r="2.4" stroke="currentColor" stroke-width="1.6"/></svg>' + t.age + '</span>' +
@@ -1316,8 +1314,9 @@
       var sub = warn ? ('Choca con ' + warn.others.join(' y ')) : (hasSlot ? (slotLabel(horarios[name]) + ' · S/' + TALLER_PRICE) : 'Falta elegir horario');
       var subClass = (warn || !hasSlot) ? ' class="warn-text"' : '';
       var photo = t ? t.photo : '';
+      var photoPos = t && t.pos ? ' style="object-position:center ' + t.pos + '"' : '';
       return '<div class="receipt-row' + (warn ? ' warn' : '') + '">' +
-        (photo ? '<img class="receipt-thumb" src="' + photo + '" alt="">' : '') +
+        (photo ? '<img class="receipt-thumb" src="' + photo + '" alt=""' + photoPos + '>' : '') +
         '<div class="receipt-row-info"><strong>' + name + '</strong><span' + subClass + '>' + sub + '</span></div>' +
         (removable ? '<button type="button" class="receipt-remove" data-remove="' + name + '" aria-label="Quitar ' + name + '"><svg viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6 6 18" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg></button>' : '') +
       '</div>';
