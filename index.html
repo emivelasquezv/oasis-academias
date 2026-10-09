@@ -305,6 +305,10 @@
   }
   .catalog-footer p{margin:0;font-weight:800;font-size:.92rem;color:var(--ink-soft);}
   .catalog-footer .btn{flex:none;}
+  .catalog-card.inactive{cursor:default;}
+  .catalog-card.inactive .catalog-card-photo img{filter:grayscale(.6);opacity:.75;}
+  .catalog-card-tag.coming-soon{background:var(--ink);color:#fff;}
+  .coming-soon-text{color:var(--ink-faint);font-weight:700;font-size:.84rem;}
 
   /* Step 1b — Ficha del taller */
   .ficha-photo{width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:20px;margin-bottom:20px;}
@@ -634,7 +638,7 @@
       </div>
       <div class="hero-stats">
         <div class="hero-stat"><b class="ticker" data-target="1000" data-suffix="+ m²">0 m²</b><span>de espacio al aire libre</span></div>
-        <div class="hero-stat"><b class="ticker" data-target="7">0</b><span>talleres para elegir</span></div>
+        <div class="hero-stat"><b class="ticker" data-target="4">0</b><span>talleres para elegir</span></div>
         <div class="hero-stat"><b class="ticker" data-target="100" data-prefix="+">0</b><span>inscritos por temporada</span></div>
       </div>
     </div>
@@ -739,7 +743,7 @@
         <div class="section-head">
           <div class="eyebrow">Talleres de verano</div>
           <h2>Elige cómo quieres que sea su verano</h2>
-          <p>Talleres pensados para aprender, crear y divertirse. Toca "Ver taller" para elegir horario y añadirlo a tu reserva.</p>
+          <p>Talleres pensados para aprender, crear y divertirse. Toca "Ver taller" para ver el horario y añadirlo a tu reserva.</p>
         </div>
         <div class="category-pills" id="category-pills"></div>
         <div class="catalog-grid" id="catalog-grid"></div>
@@ -776,7 +780,6 @@
             Añadir otro taller
           </button>
           <div id="receipt-totals" class="receipt-totals" hidden></div>
-          <p id="mireserva-hint" class="reserve-hint" hidden></p>
           <button type="button" class="btn btn-primary" id="btn-continue" disabled>Elige al menos un taller</button>
         </div>
       </div>
@@ -825,7 +828,7 @@
         <div class="reserve-cta step-panel">
           <div class="note">
             <svg viewBox="0 0 24 24" fill="none"><rect x="3.5" y="5" width="17" height="15" rx="2.5" stroke="currentColor" stroke-width="1.6"/><path d="M3.5 9.5h17M8 3v4M16 3v4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
-            <span>Hoy pagas solo la seña. El resto (saldo) se cobra una semana antes de iniciar el taller — te avisamos antes por correo.</span>
+            <span>Hoy pagas solo el 50% como seña. El resto (saldo) se cobra una semana antes de iniciar el taller — te avisamos antes por correo.</span>
           </div>
           <div id="pago-totals" class="receipt-totals"></div>
           <div class="pago-methods">
@@ -845,7 +848,7 @@
             <div class="altpay-row"><span>CCI</span><b>003-898-013477351451-45</b></div>
             <a class="btn btn-primary" id="btn-whatsapp-confirm" href="#" target="_blank" rel="noopener">Ya pagué, avisar por WhatsApp</a>
           </div>
-          <a class="btn btn-primary" id="cta-pay" href="#" data-pay-href="https://buy.stripe.com/eVq3co58L4ZPfBq7UTaR200" target="_blank" rel="noopener">Pagar la seña (S/50)</a>
+          <a class="btn btn-primary" id="cta-pay" href="#">Pagar la seña</a>
           <p id="reserve-hint" class="reserve-hint" hidden></p>
           <div class="note urgent">
             <svg viewBox="0 0 24 24" fill="none"><path d="M12 9v4m0 4h.01M10.3 3.9 2.5 18a1.8 1.8 0 0 0 1.6 2.6h16a1.8 1.8 0 0 0 1.6-2.6L13.7 3.9a1.8 1.8 0 0 0-3.4 0Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
@@ -917,7 +920,7 @@
       <div class="faq-list">
         <details open>
           <summary>¿Qué incluye la seña? <svg class="chev" width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="m6 9 6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></summary>
-          <p>S/50 vía Stripe, Yape, BCP o Interbank, que reserva el cupo de tu hij@ para el programa y horario elegido. El saldo se paga una semana antes de iniciar clases (te avisamos con un recordatorio).</p>
+          <p>El 50% del precio del taller, vía Stripe, Yape o Interbank, que reserva el cupo de tu hij@ para el programa y horario elegido. El saldo se paga una semana antes de iniciar clases (te avisamos con un recordatorio).</p>
         </details>
         <details>
           <summary>¿Puedo cambiar de horario después de reservar? <svg class="chev" width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="m6 9 6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></summary>
@@ -1080,20 +1083,9 @@
 })();
 
 (function(){
-  var TALLER_PRICE = 150; // precio de referencia por taller, por temporada
-  var DEPOSIT = 50;       // seña fija para asegurar el cupo
-
   var SUPABASE_URL = 'https://rptbdcjhqhbyelqnnxwr.supabase.co';
   var SUPABASE_KEY = 'sb_publishable_-hLXy0QGF7EJ17H37IwQrA_xNqQk10a';
   var WHATSAPP_NUMBER = '51982031159';
-
-  var SLOTS = [
-    {id:'s1', label:'Lun–Vie · 9:00 – 10:00 am'},
-    {id:'s2', label:'Lun–Vie · 10:15 – 11:15 am'},
-    {id:'s3', label:'Lun–Vie · 11:30 am – 12:30 pm'},
-    {id:'s4', label:'Lun–Vie · 3:00 – 4:00 pm'},
-    {id:'s5', label:'Lun–Vie · 4:15 – 5:15 pm'}
-  ];
 
   var CATEGORIES = [
     {id:'todos', label:'Todos'},
@@ -1103,42 +1095,35 @@
   ];
 
   var TALLERES = [
-    {name:'Estimulación Temprana', cls:'p1', cat:'desarrollo', age:'Bebés – 2 años', duration:'1 hora', photo:'assets/taller-estimulacion.jpg', pos:'top',
-      desc:'Un espacio sensorial para que los más pequeños exploren, se muevan y descubran el mundo jugando, acompañados por su cuidador.',
-      bullets:['Juego sensorial y motor','Música y estimulación temprana','Acompañado por mamá, papá o cuidador']},
-    {name:'Dibujo y Pintura', cls:'p2', cat:'expresion', age:'3 – 11 años', duration:'1 hora', photo:'assets/taller-pintura.jpg',
-      desc:'Un espacio para experimentar con colores, formas y diferentes técnicas artísticas mientras desarrollan su creatividad.',
-      bullets:['Pintura y manualidades','Técnicas artísticas variadas','Proyecto creativo propio']},
-    {name:'Marinera', cls:'p3', cat:'expresion', age:'3 – 16 años', duration:'1 hora', photo:'assets/taller-marinera.jpg',
-      desc:'Aprenden los pasos y el espíritu de la marinera peruana, ganando ritmo, postura y confianza en el escenario.',
-      bullets:['Pasos básicos de marinera','Trabajo de ritmo y postura','Muestra final para la familia']},
-    {name:'Ajedrez', cls:'p4', cat:'aprendizaje', age:'6 – 16 años', duration:'1 hora', photo:'assets/taller-ajedrez.jpg',
+    {name:'Inglés', cls:'p7', cat:'aprendizaje', active:true, age:'5 – 15 años', duration:'90 min', schedule:'Lun y Mié · 5:30 – 7:00 pm', sessions:8, price:160, photo:'assets/taller-ingles.jpg',
+      desc:'Aprenden inglés de forma lúdica, con canciones, juegos y conversación sencilla adaptada a su edad.',
+      bullets:['Vocabulario y frases básicas','Canciones y juegos en inglés','Práctica de conversación simple']},
+    {name:'Ajedrez', cls:'p4', cat:'aprendizaje', active:true, age:'5 – 15 años', duration:'90 min', schedule:'Martes · 5:30 – 7:00 pm', sessions:4, price:80, photo:'assets/taller-ajedrez.jpg',
       desc:'Desarrollan pensamiento estratégico y paciencia mientras aprenden a jugar ajedrez paso a paso, desde lo básico hasta tácticas sencillas.',
       bullets:['Movimientos y reglas del juego','Ejercicios de táctica','Partidas guiadas entre compañeros']},
-    {name:'Modelaje', cls:'p5', cat:'expresion', age:'7 – 16 años', duration:'1 hora', photo:'assets/taller-modelaje.jpg',
+    {name:'Modelaje y Pasarela', cls:'p5', cat:'expresion', active:true, age:'5 – 15 años', duration:'90 min', schedule:'Jueves · 5:30 – 7:00 pm', sessions:4, price:80, photo:'assets/taller-modelaje.jpg',
       desc:'Trabajan postura, expresión corporal y seguridad escénica en un ambiente divertido y respetuoso.',
       bullets:['Postura y caminata','Expresión frente a cámara','Seguridad y confianza escénica']},
-    {name:'Baile Moderno', cls:'p6', cat:'expresion', age:'6 – 16 años', duration:'1 hora', photo:'assets/taller-baile-moderno.jpg',
+    {name:'Danza Moderna', cls:'p6', cat:'expresion', active:true, age:'5 – 15 años', duration:'90 min', schedule:'Viernes · 5:30 – 7:00 pm', sessions:4, price:80, photo:'assets/taller-baile-moderno.jpg',
       desc:'Coreografías dinámicas al ritmo de música actual, para soltarse, moverse y trabajar en equipo.',
       bullets:['Coreografía grupal','Calentamiento y ritmo','Presentación final']},
-    {name:'Inglés', cls:'p7', cat:'aprendizaje', age:'3 – 16 años', duration:'1 hora', photo:'assets/taller-ingles.jpg',
-      desc:'Aprenden inglés de forma lúdica, con canciones, juegos y conversación sencilla adaptada a su edad.',
-      bullets:['Vocabulario y frases básicas','Canciones y juegos en inglés','Práctica de conversación simple']}
+    {name:'Estimulación Temprana', cls:'p1', cat:'desarrollo', active:false, age:'Bebés – 2 años', duration:'1 hora', photo:'assets/taller-estimulacion.jpg', pos:'top',
+      desc:'Un espacio sensorial para que los más pequeños exploren, se muevan y descubran el mundo jugando, acompañados por su cuidador.',
+      bullets:['Juego sensorial y motor','Música y estimulación temprana','Acompañado por mamá, papá o cuidador']},
+    {name:'Dibujo y Pintura', cls:'p2', cat:'expresion', active:false, age:'3 – 11 años', duration:'1 hora', photo:'assets/taller-pintura.jpg',
+      desc:'Un espacio para experimentar con colores, formas y diferentes técnicas artísticas mientras desarrollan su creatividad.',
+      bullets:['Pintura y manualidades','Técnicas artísticas variadas','Proyecto creativo propio']},
+    {name:'Marinera', cls:'p3', cat:'expresion', active:false, age:'3 – 16 años', duration:'1 hora', photo:'assets/taller-marinera.jpg',
+      desc:'Aprenden los pasos y el espíritu de la marinera peruana, ganando ritmo, postura y confianza en el escenario.',
+      bullets:['Pasos básicos de marinera','Trabajo de ritmo y postura','Muestra final para la familia']}
   ];
 
   var selected = new Set();   // talleres elegidos
-  var horarios = {};          // taller -> slot id
   var activeCategory = 'todos';
   var fichaName = null;       // taller cuya ficha está abierta
-  var fichaSlot = null;       // horario elegido temporalmente en la ficha (aún no confirmado)
 
   function findTaller(name){
     return TALLERES.filter(function(t){ return t.name === name; })[0] || null;
-  }
-
-  function slotLabel(id){
-    var s = SLOTS.filter(function(s){ return s.id === id; })[0];
-    return s ? s.label : '';
   }
 
   function fieldVal(id){
@@ -1146,41 +1131,23 @@
     return el ? el.value.trim() : '';
   }
 
-  function findConflicts(){
-    var bySlot = {};
-    Array.from(selected).forEach(function(name){
-      var slot = horarios[name];
-      if(!slot) return;
-      (bySlot[slot] = bySlot[slot] || []).push(name);
-    });
-    var conflicts = [];
-    Object.keys(bySlot).forEach(function(slot){
-      if(bySlot[slot].length > 1) conflicts.push({slot:slot, talleres:bySlot[slot]});
-    });
-    return conflicts;
+  function computeTotal(names){
+    return names.reduce(function(sum, name){
+      var t = findTaller(name);
+      return sum + (t ? t.price : 0);
+    }, 0);
   }
 
-  function conflictMap(){
-    var conflictedBy = {};
-    findConflicts().forEach(function(c){
-      c.talleres.forEach(function(name){
-        var others = c.talleres.filter(function(n){ return n !== name; });
-        conflictedBy[name] = {others: others, slot: c.slot};
-      });
-    });
-    return conflictedBy;
+  function computeDeposit(total){
+    return Math.round(total * 0.5);
   }
 
   function getProblems(){
     var names = Array.from(selected);
-    var missingHorario = names.filter(function(n){ return !horarios[n]; });
-    var hasConflict = findConflicts().length > 0;
     var childName = fieldVal('f-child-name');
 
     var problems = [];
     if(names.length === 0) problems.push('elige al menos un taller');
-    if(missingHorario.length) problems.push('ponle horario a ' + missingHorario.join(' y '));
-    if(hasConflict) problems.push('resuelve el cruce de horarios');
     if(!childName) problems.push('escribe el nombre del niño/a');
     return problems;
   }
@@ -1207,6 +1174,19 @@
     var list = TALLERES.filter(function(t){ return activeCategory === 'todos' || t.cat === activeCategory; });
     grid.innerHTML = list.map(function(t){
       var catLabel = (CATEGORIES.filter(function(c){ return c.id === t.cat; })[0] || {}).label || '';
+      if(!t.active){
+        return '<div class="catalog-card ' + t.cls + ' inactive">' +
+          '<span class="catalog-card-photo">' +
+            '<img src="' + t.photo + '" alt="' + t.name + '" loading="lazy"' + (t.pos ? ' style="object-position:center ' + t.pos + '"' : '') + '>' +
+            '<span class="catalog-card-tag coming-soon">Próximamente</span>' +
+          '</span>' +
+          '<span class="catalog-card-body">' +
+            '<strong>' + t.name + '</strong>' +
+            '<span class="meta">' + t.age + '</span>' +
+            '<span class="price-row"><span class="coming-soon-text">Disponible en una próxima temporada</span></span>' +
+          '</span>' +
+        '</div>';
+      }
       var isSelected = selected.has(t.name);
       return '<button type="button" class="catalog-card ' + t.cls + (isSelected ? ' selected' : '') + '" data-taller="' + t.name + '">' +
         '<span class="catalog-card-photo">' +
@@ -1216,12 +1196,12 @@
         '</span>' +
         '<span class="catalog-card-body">' +
           '<strong>' + t.name + '</strong>' +
-          '<span class="meta">' + t.age + ' · ' + t.duration + '</span>' +
-          '<span class="price-row"><b>S/' + TALLER_PRICE + '</b><span>Ver taller →</span></span>' +
+          '<span class="meta">' + t.age + ' · ' + t.schedule + '</span>' +
+          '<span class="price-row"><b>S/' + t.price + '</b><span>Ver taller →</span></span>' +
         '</span>' +
       '</button>';
     }).join('');
-    Array.prototype.slice.call(grid.querySelectorAll('.catalog-card')).forEach(function(card){
+    Array.prototype.slice.call(grid.querySelectorAll('button.catalog-card')).forEach(function(card){
       card.addEventListener('click', function(){
         openFicha(card.getAttribute('data-taller'));
       });
@@ -1239,9 +1219,8 @@
   // ---------- Paso 1b: Ficha del taller ----------
   function openFicha(name){
     var t = findTaller(name);
-    if(!t) return;
+    if(!t || !t.active) return;
     fichaName = name;
-    fichaSlot = horarios[name] || null;
     renderFicha();
     showStep('ficha');
   }
@@ -1251,15 +1230,6 @@
     var box = document.getElementById('ficha-content');
     if(!t || !box) return;
     var catLabel = (CATEGORIES.filter(function(c){ return c.id === t.cat; })[0] || {}).label || '';
-
-    var tempConflict = null;
-    if(fichaSlot){
-      var others = Array.from(selected).filter(function(n){
-        return n !== fichaName && horarios[n] === fichaSlot;
-      });
-      if(others.length) tempConflict = others;
-    }
-
     var alreadyAdded = selected.has(fichaName);
 
     box.className = t.cls;
@@ -1268,34 +1238,21 @@
       '<div class="ficha-head"><h2>' + t.name + '</h2><span class="ficha-tag">' + catLabel + '</span></div>' +
       '<div class="ficha-meta">' +
         '<span class="ficha-meta-item"><svg viewBox="0 0 24 24" fill="none"><path d="M12 21s-7-4.5-7-10a7 7 0 0 1 14 0c0 5.5-7 10-7 10Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><circle cx="12" cy="10.5" r="2.4" stroke="currentColor" stroke-width="1.6"/></svg>' + t.age + '</span>' +
-        '<span class="ficha-meta-item"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8.5" stroke="currentColor" stroke-width="1.6"/><path d="M12 7.5V12l3 2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>' + t.duration + '</span>' +
-        '<span class="ficha-meta-item"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3v18M7 7.5c0-1.9 2-3 5-3s5 1.1 5 2.4c0 3.4-10 1.4-10 5 0 1.6 2 2.6 5 2.6s5-1.1 5-2.6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>S/' + TALLER_PRICE + '</span>' +
+        '<span class="ficha-meta-item"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8.5" stroke="currentColor" stroke-width="1.6"/><path d="M12 7.5V12l3 2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>' + t.schedule + '</span>' +
+        '<span class="ficha-meta-item"><svg viewBox="0 0 24 24" fill="none"><rect x="3.5" y="5" width="17" height="15" rx="2.5" stroke="currentColor" stroke-width="1.6"/><path d="M3.5 9.5h17M8 3v4M16 3v4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>' + t.sessions + ' sesiones al mes · ' + t.duration + '</span>' +
+        '<span class="ficha-meta-item"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3v18M7 7.5c0-1.9 2-3 5-3s5 1.1 5 2.4c0 3.4-10 1.4-10 5 0 1.6 2 2.6 5 2.6s5-1.1 5-2.6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>S/' + t.price + '</span>' +
       '</div>' +
       '<p class="ficha-desc">' + t.desc + '</p>' +
       '<p class="ficha-sub">¿Qué harán?</p>' +
       '<ul class="ficha-bullets">' + t.bullets.map(function(b){
         return '<li><svg viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4 10-10" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>' + b + '</li>';
       }).join('') + '</ul>' +
-      '<p class="ficha-sub">Elige un horario</p>' +
-      '<div class="ficha-horarios">' + SLOTS.map(function(s){
-        return '<button type="button" class="horario-pill' + (fichaSlot === s.id ? ' active' : '') + '" data-slot="' + s.id + '">' + s.label + '</button>';
-      }).join('') + '</div>' +
-      (tempConflict ? '<p class="ficha-conflict"><svg viewBox="0 0 24 24" fill="none"><path d="M12 9v4m0 4h.01M10.3 3.9 2.5 18a1.8 1.8 0 0 0 1.6 2.6h16a1.8 1.8 0 0 0 1.6-2.6L13.7 3.9a1.8 1.8 0 0 0-3.4 0Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg><span>Choca con ' + tempConflict.join(' y ') + ' — puedes elegir otro horario.</span></p>' : '') +
-      '<button type="button" class="btn btn-primary" id="btn-add-ficha"' + (fichaSlot ? '' : ' disabled') + '>' + (alreadyAdded ? 'Actualizar horario' : 'Añadir a mi reserva →') + '</button>';
-
-    Array.prototype.slice.call(box.querySelectorAll('.horario-pill')).forEach(function(pill){
-      pill.addEventListener('click', function(){
-        fichaSlot = pill.getAttribute('data-slot');
-        renderFicha();
-      });
-    });
+      '<button type="button" class="btn btn-primary" id="btn-add-ficha"' + (alreadyAdded ? ' disabled' : '') + '>' + (alreadyAdded ? 'Ya está en tu reserva ✓' : 'Añadir a mi reserva →') + '</button>';
 
     var addBtn = document.getElementById('btn-add-ficha');
-    if(addBtn){
+    if(addBtn && !alreadyAdded){
       addBtn.addEventListener('click', function(){
-        if(!fichaSlot) return;
         selected.add(fichaName);
-        horarios[fichaName] = fichaSlot;
         if(window.oasisToast) window.oasisToast(fichaName + ' se añadió a tu reserva.');
         renderCatalog();
         showStep('catalogo');
@@ -1306,28 +1263,25 @@
   // ---------- Recibo reutilizable (Mi reserva / Datos / Confirmación) ----------
   function buildReceiptRows(names, removable){
     if(names.length === 0) return '<p class="receipt-empty">Toca uno o más talleres del catálogo para armar tu reserva.</p>';
-    var conflictedBy = conflictMap();
     return names.map(function(name){
       var t = findTaller(name);
-      var warn = conflictedBy[name];
-      var hasSlot = !!horarios[name];
-      var sub = warn ? ('Choca con ' + warn.others.join(' y ')) : (hasSlot ? (slotLabel(horarios[name]) + ' · S/' + TALLER_PRICE) : 'Falta elegir horario');
-      var subClass = (warn || !hasSlot) ? ' class="warn-text"' : '';
+      var sub = t ? (t.schedule + ' · S/' + t.price) : '';
       var photo = t ? t.photo : '';
       var photoPos = t && t.pos ? ' style="object-position:center ' + t.pos + '"' : '';
-      return '<div class="receipt-row' + (warn ? ' warn' : '') + '">' +
+      return '<div class="receipt-row">' +
         (photo ? '<img class="receipt-thumb" src="' + photo + '" alt=""' + photoPos + '>' : '') +
-        '<div class="receipt-row-info"><strong>' + name + '</strong><span' + subClass + '>' + sub + '</span></div>' +
+        '<div class="receipt-row-info"><strong>' + name + '</strong><span>' + sub + '</span></div>' +
         (removable ? '<button type="button" class="receipt-remove" data-remove="' + name + '" aria-label="Quitar ' + name + '"><svg viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6 6 18" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg></button>' : '') +
       '</div>';
     }).join('');
   }
 
-  function buildTotalsHTML(count){
-    var total = count * TALLER_PRICE;
-    var balance = Math.max(0, total - DEPOSIT);
-    return '<div class="total-row"><span>Total (' + count + (count === 1 ? ' taller' : ' talleres') + ')</span><span>S/' + total + '</span></div>' +
-      '<div class="total-row"><span>Seña (se descuenta del total)</span><span>S/' + DEPOSIT + '</span></div>' +
+  function buildTotalsHTML(names){
+    var total = computeTotal(names);
+    var deposit = computeDeposit(total);
+    var balance = total - deposit;
+    return '<div class="total-row"><span>Total (' + names.length + (names.length === 1 ? ' taller' : ' talleres') + ')</span><span>S/' + total + '</span></div>' +
+      '<div class="total-row"><span>Seña (50%, se descuenta del total)</span><span>S/' + deposit + '</span></div>' +
       '<div class="total-row balance"><span>Saldo restante</span><b>S/' + balance + '</b></div>';
   }
 
@@ -1342,7 +1296,6 @@
           btn.addEventListener('click', function(){
             var name = btn.getAttribute('data-remove');
             selected.delete(name);
-            delete horarios[name];
             renderMiReserva();
           });
         });
@@ -1350,7 +1303,7 @@
     }
     if(totalsBox){
       totalsBox.hidden = names.length === 0;
-      if(names.length) totalsBox.innerHTML = buildTotalsHTML(names.length);
+      if(names.length) totalsBox.innerHTML = buildTotalsHTML(names);
     }
   }
 
@@ -1358,16 +1311,10 @@
   function renderMiReserva(){
     renderReceiptInto('talleres-receipt', 'receipt-totals', true);
     var continueBtn = document.getElementById('btn-continue');
-    var hint = document.getElementById('mireserva-hint');
     var count = selected.size;
     if(continueBtn){
       continueBtn.disabled = count === 0;
       continueBtn.textContent = count === 0 ? 'Elige al menos un taller' : 'Continuar (' + count + (count === 1 ? ' taller' : ' talleres') + ')';
-    }
-    if(hint){
-      var hasConflict = findConflicts().length > 0;
-      hint.hidden = !hasConflict;
-      if(hasConflict) hint.textContent = 'Tienes talleres con el mismo horario — edítalos antes de continuar.';
     }
   }
 
@@ -1376,9 +1323,10 @@
     var link = document.getElementById('btn-whatsapp-confirm');
     if(!link) return;
     var names = Array.from(selected);
-    var total = names.length * TALLER_PRICE;
+    var total = computeTotal(names);
+    var deposit = computeDeposit(total);
     var childName = fieldVal('f-child-name') || '(sin nombre)';
-    var msg = 'Hola! Quiero confirmar el pago de la seña (S/' + DEPOSIT + ') de la reserva de ' + childName +
+    var msg = 'Hola! Quiero confirmar el pago de la seña (S/' + deposit + ') de la reserva de ' + childName +
       ' para: ' + names.join(', ') + '. Total: S/' + total + '.';
     link.href = 'https://wa.me/' + WHATSAPP_NUMBER + '?text=' + encodeURIComponent(msg);
   }
@@ -1390,7 +1338,9 @@
     var problems = getProblems();
     var ready = problems.length === 0;
     ctaPay.setAttribute('aria-disabled', ready ? 'false' : 'true');
-    ctaPay.href = ready ? ctaPay.getAttribute('data-pay-href') : '#';
+    var names = Array.from(selected);
+    var deposit = computeDeposit(computeTotal(names));
+    ctaPay.textContent = 'Pagar la seña (S/' + deposit + ')';
     if(hint){
       hint.hidden = ready;
       if(!ready) hint.textContent = 'Para reservar falta: ' + problems.join(' · ') + '.';
@@ -1406,8 +1356,9 @@
     var names = Array.from(selected);
     if(names.length === 0) return Promise.resolve(null);
 
-    var total = names.length * TALLER_PRICE;
-    var balance = Math.max(0, total - DEPOSIT);
+    var total = computeTotal(names);
+    var deposit = computeDeposit(total);
+    var balance = total - deposit;
     var ageRaw = fieldVal('f-child-age');
     var reservationId = crypto.randomUUID();
 
@@ -1419,7 +1370,7 @@
       parent_phone: fieldVal('f-parent-phone') || null,
       parent_email: fieldVal('f-parent-email') || null,
       total: total,
-      deposit: DEPOSIT,
+      deposit: deposit,
       balance: balance
     };
 
@@ -1437,11 +1388,12 @@
     }).then(function(res){
       if(!res.ok) throw new Error('reservations insert failed: ' + res.status);
       var itemRows = names.map(function(name){
+        var t = findTaller(name);
         return {
           reservation_id: reservationId,
           taller: name,
-          horario: slotLabel(horarios[name]),
-          price: TALLER_PRICE
+          horario: t ? t.schedule : '',
+          price: t ? t.price : 0
         };
       });
       return fetch(SUPABASE_URL + '/rest/v1/reservation_items', {
@@ -1459,22 +1411,38 @@
     });
   }
 
+  function createDepositCheckout(reservationId){
+    return fetch(SUPABASE_URL + '/functions/v1/create-deposit-checkout', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ reservation_id: reservationId })
+    }).then(function(res){ return res.json(); })
+      .then(function(data){ return data.url || null; })
+      .catch(function(){ return null; });
+  }
+
   document.getElementById('cta-pay').addEventListener('click', function(e){
+    e.preventDefault();
     if(this.getAttribute('aria-disabled') === 'true'){
-      e.preventDefault();
       if(window.oasisToast) window.oasisToast(blockedToastMessage());
       return;
     }
-    e.preventDefault();
-    var payHref = this.getAttribute('data-pay-href');
     var payWindow = window.open('', '_blank');
     saveReservation().then(function(reservationId){
-      var url = payHref;
-      if(reservationId){
-        url += (url.indexOf('?') === -1 ? '?' : '&') + 'client_reference_id=' + encodeURIComponent(reservationId);
+      if(!reservationId){
+        if(payWindow) payWindow.close();
+        if(window.oasisToast) window.oasisToast('No se pudo guardar tu reserva. Intenta de nuevo.');
+        return;
       }
-      if(payWindow) payWindow.location.href = url;
-      else window.open(url, '_blank', 'noopener');
+      createDepositCheckout(reservationId).then(function(url){
+        if(url){
+          if(payWindow) payWindow.location.href = url;
+          else window.open(url, '_blank', 'noopener');
+        } else {
+          if(payWindow) payWindow.close();
+          if(window.oasisToast) window.oasisToast('No se pudo iniciar el pago. Escríbenos por WhatsApp para confirmarlo.');
+        }
+      });
     });
   });
 
@@ -1553,7 +1521,7 @@
     if(hint) hint.hidden = true;
     var names = Array.from(selected);
     var totalsBox = document.getElementById('pago-totals');
-    if(totalsBox) totalsBox.innerHTML = buildTotalsHTML(names.length);
+    if(totalsBox) totalsBox.innerHTML = buildTotalsHTML(names);
     updatePagoReadiness();
     updateWhatsappLink();
     showStep('pago');
