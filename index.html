@@ -132,6 +132,11 @@
   .whatsapp-float svg{width:28px;height:28px;}
   @media (max-width:520px){.whatsapp-float{right:16px;bottom:16px;width:52px;height:52px;}.whatsapp-float svg{width:25px;height:25px;}}
 
+  /* Reserva espacio para que el botón flotante de WhatsApp nunca tape estos botones */
+  @media (max-width:900px){
+    .btn-safe-float{max-width:calc(100% - 76px);}
+  }
+
   /* ---------- Nav ---------- */
   .nav{
     position:sticky;top:0;z-index:40;
@@ -726,7 +731,7 @@
             Añadir otro taller
           </button>
           <div id="receipt-totals" class="receipt-totals" hidden></div>
-          <button type="button" class="btn btn-primary" id="btn-continue" disabled>Elige al menos un taller</button>
+          <button type="button" class="btn btn-primary btn-safe-float" id="btn-continue" disabled>Elige al menos un taller</button>
         </div>
       </div>
 
@@ -751,7 +756,7 @@
               <label class="field field-wide"><span>Correo electrónico</span><input type="email" id="f-parent-email" autocomplete="off" placeholder="tucorreo@ejemplo.com"></label>
             </div>
             <p id="datos-hint" class="reserve-hint" hidden></p>
-            <button type="button" class="btn btn-primary" id="btn-go-pago">Siguiente →</button>
+            <button type="button" class="btn btn-primary btn-safe-float" id="btn-go-pago">Siguiente →</button>
           </div>
           <div class="step-panel">
             <p class="receipt-title">Tu reserva</p>
@@ -792,9 +797,9 @@
             <div class="altpay-row"><span>A nombre de</span><b>Emilia Alessandra Velasquez Vera</b></div>
             <div class="altpay-row"><span>Interbank · Cuenta Simple Soles</span><b>898-3477351-4-51</b></div>
             <div class="altpay-row"><span>CCI</span><b>003-898-013477351451-45</b></div>
-            <a class="btn btn-primary" id="btn-whatsapp-confirm" href="#" target="_blank" rel="noopener">Ya pagué, avisar por WhatsApp</a>
+            <a class="btn btn-primary btn-safe-float" id="btn-whatsapp-confirm" href="#" target="_blank" rel="noopener">Ya pagué, avisar por WhatsApp</a>
           </div>
-          <a class="btn btn-primary" id="cta-pay" href="#">Pagar la seña</a>
+          <a class="btn btn-primary btn-safe-float" id="cta-pay" href="#">Pagar la seña</a>
           <p id="reserve-hint" class="reserve-hint" hidden></p>
           <div class="note urgent">
             <svg viewBox="0 0 24 24" fill="none"><path d="M12 9v4m0 4h.01M10.3 3.9 2.5 18a1.8 1.8 0 0 0 1.6 2.6h16a1.8 1.8 0 0 0 1.6-2.6L13.7 3.9a1.8 1.8 0 0 0-3.4 0Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
