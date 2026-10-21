@@ -549,6 +549,12 @@
   details[open] summary .chev{transform:rotate(180deg);}
   details p{margin:0 0 20px;color:var(--ink-soft);font-size:.96rem;max-width:68ch;}
 
+  /* ---------- Privacidad ---------- */
+  .policy-text{display:flex;flex-direction:column;gap:2px;max-width:720px;}
+  .policy-text p{margin:0 0 16px;color:var(--ink-soft);font-size:.96rem;max-width:68ch;}
+  .policy-text p b{color:var(--ink);}
+  .policy-text a{color:var(--blue);font-weight:700;}
+
   /* ---------- Footer ---------- */
   footer{background:var(--ink);color:rgba(255,255,255,.8);padding-block:44px;}
   :root[data-theme="dark"] footer, @media (prefers-color-scheme:dark){footer{background:#070D17;}}
@@ -900,6 +906,24 @@
     </div>
   </section>
 
+  <!-- PRIVACIDAD -->
+  <section id="privacidad">
+    <div class="wrap">
+      <div class="section-head">
+        <div class="eyebrow">Privacidad</div>
+        <h2>Política de Privacidad</h2>
+      </div>
+      <div class="policy-text">
+        <p><b>Qué datos recopilamos.</b> Al reservar un cupo te pedimos el nombre y edad de tu hij@, y tu nombre, teléfono y correo electrónico como apoderado/a.</p>
+        <p><b>Para qué los usamos.</b> Para gestionar tu reserva, coordinarnos contigo sobre el taller elegido y enviarte un recordatorio del saldo antes de iniciar clases.</p>
+        <p><b>Dónde se guardan.</b> Tus datos se almacenan de forma segura en Supabase, nuestro proveedor de base de datos, que actúa como encargado del tratamiento.</p>
+        <p><b>Pagos.</b> Los pagos se procesan a través de Stripe, Yape o transferencia bancaria directa; no almacenamos datos de tarjetas en nuestros servidores.</p>
+        <p><b>Tus derechos.</b> Puedes pedirnos acceder, corregir o eliminar tus datos escribiéndonos a <a href="mailto:oasisacademiasaqp@gmail.com">oasisacademiasaqp@gmail.com</a>.</p>
+        <p>No vendemos ni compartimos tus datos con terceros para fines publicitarios.</p>
+      </div>
+    </div>
+  </section>
+
 </main>
 
 <footer>
@@ -912,6 +936,7 @@
       <li><a href="mailto:oasisacademiasaqp@gmail.com">oasisacademiasaqp@gmail.com</a></li>
       <li><a href="https://www.facebook.com/profile.php?id=61568151174405" target="_blank" rel="noopener">Facebook</a></li>
       <li><a href="https://www.instagram.com/oasisacademias/" target="_blank" rel="noopener">Instagram</a></li>
+      <li><a href="#privacidad">Privacidad</a></li>
     </ul>
     <span style="font-size:.82rem;color:rgba(255,255,255,.55)">© 2026 Oasis Academias Arequipa</span>
   </div>
