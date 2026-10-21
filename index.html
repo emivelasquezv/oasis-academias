@@ -621,7 +621,7 @@
       </div>
       <div class="hero-stats">
         <div class="hero-stat"><b class="ticker" data-target="1000" data-suffix="+ m²">0 m²</b><span>de espacio al aire libre</span></div>
-        <div class="hero-stat"><b class="ticker" data-target="4">0</b><span>talleres para elegir</span></div>
+        <div class="hero-stat"><b class="ticker" data-target="12">0</b><span>talleres para elegir</span></div>
         <div class="hero-stat"><b class="ticker" data-target="100" data-prefix="+">0</b><span>inscritos por temporada</span></div>
       </div>
     </div>
@@ -1051,27 +1051,42 @@
   ];
 
   var TALLERES = [
-    {name:'Inglés', cls:'p7', cat:'aprendizaje', active:true, age:'5 – 15 años', duration:'90 min', schedule:'Lun y Mié · 5:30 – 7:00 pm', sessions:8, price:160, photo:'assets/taller-ingles.jpg',
-      desc:'Aprenden inglés de forma lúdica, con canciones, juegos y conversación sencilla adaptada a su edad.',
-      bullets:['Vocabulario y frases básicas','Canciones y juegos en inglés','Práctica de conversación simple']},
-    {name:'Ajedrez', cls:'p4', cat:'aprendizaje', active:true, age:'5 – 15 años', duration:'90 min', schedule:'Martes · 5:30 – 7:00 pm', sessions:4, price:80, photo:'assets/taller-ajedrez.jpg',
-      desc:'Desarrollan pensamiento estratégico y paciencia mientras aprenden a jugar ajedrez paso a paso, desde lo básico hasta tácticas sencillas.',
-      bullets:['Movimientos y reglas del juego','Ejercicios de táctica','Partidas guiadas entre compañeros']},
-    {name:'Modelaje y Pasarela', cls:'p5', cat:'expresion', active:true, age:'5 – 15 años', duration:'90 min', schedule:'Jueves · 5:30 – 7:00 pm', sessions:4, price:80, photo:'assets/taller-modelaje.jpg',
-      desc:'Trabajan postura, expresión corporal y seguridad escénica en un ambiente divertido y respetuoso.',
-      bullets:['Postura y caminata','Expresión frente a cámara','Seguridad y confianza escénica']},
-    {name:'Danza Moderna', cls:'p6', cat:'expresion', active:true, age:'5 – 15 años', duration:'90 min', schedule:'Viernes · 5:30 – 7:00 pm', sessions:4, price:80, photo:'assets/taller-baile-moderno.jpg',
-      desc:'Coreografías dinámicas al ritmo de música actual, para soltarse, moverse y trabajar en equipo.',
+    {name:'Marinera Mayores', cls:'p3', cat:'expresion', active:true, age:'8 – 15 años', duration:'60 min', schedule:'Lun, Mié y Vie · 8:00 – 9:00 am', sessions:12, price:200, photo:'assets/taller-marinera.jpg',
+      desc:'Aprenden los pasos y el espíritu de la marinera peruana, ganando ritmo, postura y confianza en el escenario.',
+      bullets:['Pasos básicos y avanzados de marinera','Trabajo de ritmo y postura','Muestra final para la familia']},
+    {name:'Modelaje Mayores', cls:'p5', cat:'expresion', active:true, age:'9 – 15 años', duration:'90 min', schedule:'Lun, Mié y Vie · 9:00 – 10:30 am', sessions:12, price:200, photo:'assets/taller-modelaje.jpg',
+      desc:'Trabajan postura, expresión corporal y seguridad escénica en pasarela, en un ambiente divertido y respetuoso.',
+      bullets:['Postura y caminata en pasarela','Expresión frente a cámara','Seguridad y confianza escénica']},
+    {name:'Modelaje Menores', cls:'p5', cat:'expresion', active:true, age:'5 – 8 años', duration:'60 min', schedule:'Lun, Mié y Vie · 10:30 – 11:30 am', sessions:12, price:180, photo:'assets/taller-modelaje.jpg',
+      desc:'Primeros pasos en pasarela: postura, coordinación y seguridad frente a los demás, de forma lúdica.',
+      bullets:['Postura y equilibrio','Juegos de coordinación','Primera muestra en pasarela']},
+    {name:'Danza Menores', cls:'p6', cat:'expresion', active:true, age:'5 – 8 años', duration:'60 min', schedule:'Lun, Mié y Vie · 9:30 – 10:30 am', sessions:12, price:180, photo:'assets/taller-baile-moderno.jpg',
+      desc:'Coreografías sencillas y divertidas para soltarse, moverse al ritmo de la música y trabajar en equipo.',
       bullets:['Coreografía grupal','Calentamiento y ritmo','Presentación final']},
-    {name:'Estimulación Temprana', cls:'p1', cat:'desarrollo', active:false, duration:'1 hora', photo:'assets/taller-estimulacion.jpg', pos:'top',
+    {name:'Danza Mayores', cls:'p6', cat:'expresion', active:true, age:'9 – 15 años', duration:'60 min', schedule:'Lun, Mié y Vie · 10:30 – 11:30 am', sessions:12, price:180, photo:'assets/taller-baile-moderno.jpg',
+      desc:'Coreografías dinámicas al ritmo de música actual, para ganar seguridad, condición física y trabajo en equipo.',
+      bullets:['Coreografía grupal','Técnica y ritmo','Presentación final']},
+    {name:'Estimulación Temprana 1 año', cls:'p1', cat:'desarrollo', active:true, age:'1 – 2 años', duration:'60 min', schedule:'Lun, Mié y Vie · 9:30 – 10:30 am', sessions:12, price:180, photo:'assets/taller-estimulacion.jpg', pos:'top',
       desc:'Un espacio sensorial para que los más pequeños exploren, se muevan y descubran el mundo jugando, acompañados por su cuidador.',
       bullets:['Juego sensorial y motor','Música y estimulación temprana','Acompañado por mamá, papá o cuidador']},
-    {name:'Dibujo y Pintura', cls:'p2', cat:'expresion', active:false, duration:'1 hora', photo:'assets/taller-pintura.jpg',
-      desc:'Un espacio para experimentar con colores, formas y diferentes técnicas artísticas mientras desarrollan su creatividad.',
-      bullets:['Pintura y manualidades','Técnicas artísticas variadas','Proyecto creativo propio']},
-    {name:'Marinera', cls:'p3', cat:'expresion', active:false, duration:'1 hora', photo:'assets/taller-marinera.jpg',
-      desc:'Aprenden los pasos y el espíritu de la marinera peruana, ganando ritmo, postura y confianza en el escenario.',
-      bullets:['Pasos básicos de marinera','Trabajo de ritmo y postura','Muestra final para la familia']}
+    {name:'Estimulación Temprana 2 años', cls:'p1', cat:'desarrollo', active:true, age:'2 – 3 años', duration:'60 min', schedule:'Lun, Mié y Vie · 10:30 – 11:30 am', sessions:12, price:180, photo:'assets/taller-estimulacion.jpg', pos:'top',
+      desc:'Actividades sensoriales y motoras pensadas para esta etapa, fomentando autonomía, lenguaje y socialización temprana.',
+      bullets:['Juego sensorial y motor','Lenguaje y socialización','Acompañado por mamá, papá o cuidador']},
+    {name:'Etiqueta', cls:'p2', cat:'aprendizaje', active:true, age:'5 – 15 años', duration:'60 min', schedule:'Lun, Mié y Vie · 11:30 am – 12:30 pm', sessions:12, price:150, photo:'assets/taller-etiqueta.jpg',
+      desc:'Normas de cortesía, buenos modales y comportamiento social, aprendidos de forma práctica y amena, todas las edades juntas.',
+      bullets:['Modales en la mesa','Saludo y presentación personal','Comportamiento en distintos entornos sociales']},
+    {name:'Oratoria', cls:'p4', cat:'aprendizaje', active:true, age:'6 – 15 años', duration:'60 min', schedule:'Mar y Jue · 9:00 – 10:00 am', sessions:8, price:130, photo:'assets/taller-oratoria.jpg',
+      desc:'Pierden el miedo a hablar en público y aprenden a expresar sus ideas con claridad y confianza.',
+      bullets:['Técnicas de expresión oral','Control del miedo escénico','Discursos y presentaciones cortas']},
+    {name:'Liderazgo y Coach', cls:'p7', cat:'aprendizaje', active:true, age:'8 – 15 años', duration:'60 min', schedule:'Mar y Jue · 10:00 – 11:00 am', sessions:8, price:130, photo:'assets/taller-liderazgo.jpg',
+      desc:'Desarrollan habilidades de liderazgo, trabajo en equipo y toma de decisiones a través de dinámicas y retos.',
+      bullets:['Dinámicas de trabajo en equipo','Toma de decisiones','Comunicación asertiva']},
+    {name:'Iniciación al Ajedrez', cls:'p4', cat:'aprendizaje', active:true, age:'5 – 8 años', duration:'60 min', schedule:'Mar y Jue · 9:00 – 10:00 am', sessions:8, price:130, photo:'assets/taller-ajedrez.jpg',
+      desc:'Primeros pasos en el ajedrez: el tablero, las piezas y las reglas básicas, de forma lúdica y sencilla.',
+      bullets:['El tablero y las piezas','Movimientos básicos','Primeras partidas guiadas']},
+    {name:'Ajedrez', cls:'p4', cat:'aprendizaje', active:true, age:'9 – 15 años', duration:'60 min', schedule:'Mar y Jue · 10:00 – 11:00 am', sessions:8, price:130, photo:'assets/taller-ajedrez.jpg',
+      desc:'Desarrollan pensamiento estratégico y paciencia mientras aprenden tácticas más avanzadas de ajedrez.',
+      bullets:['Movimientos y reglas avanzadas','Ejercicios de táctica','Partidas guiadas entre compañeros']}
   ];
 
   var selected = new Set();   // talleres elegidos
