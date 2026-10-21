@@ -340,18 +340,23 @@
   .ficha-bullets{list-style:none;margin:0 0 26px;padding:0;display:flex;flex-direction:column;gap:9px;max-width:48ch;}
   .ficha-bullets li{display:flex;gap:9px;align-items:flex-start;font-size:.94rem;color:var(--ink);}
   .ficha-bullets svg{flex:none;width:16px;height:16px;margin-top:2px;color:var(--c3);}
-  .ficha-horarios{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:26px;}
-  .horario-pill{
-    font-family:'Nunito',sans-serif;font-weight:800;font-size:.84rem;color:var(--ink);
-    background:var(--surface);border:1.5px solid var(--border);border-radius:999px;
-    padding:10px 16px;cursor:pointer;transition:background .15s ease,color .15s ease,border-color .15s ease;
+  /* Selector de variante (ej. Menores/Mayores) dentro de la ficha */
+  .variant-intro{font-size:.8rem;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-faint);margin:0 0 10px;}
+  .variant-options{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:22px;}
+  @media (max-width:520px){.variant-options{grid-template-columns:1fr;}}
+  .variant-card{
+    display:flex;flex-direction:column;gap:4px;text-align:left;cursor:pointer;
+    background:var(--surface);border:1.5px solid var(--border);border-radius:16px;
+    padding:16px 18px;transition:border-color .15s ease,transform .15s ease,box-shadow .15s ease;
   }
-  .horario-pill.active{background:var(--c3);border-color:var(--c3);color:#fff;}
-  .ficha-conflict{
-    margin:-14px 0 20px;font-size:.84rem;font-weight:800;color:var(--magenta-deep);
-    display:flex;gap:6px;align-items:flex-start;
-  }
-  .ficha-conflict svg{flex:none;width:16px;height:16px;margin-top:1px;}
+  .variant-card:hover{border-color:var(--c3);transform:translateY(-2px);}
+  .variant-card.active{border-color:var(--c3);box-shadow:0 0 0 2px var(--c1) inset;}
+  .variant-card .variant-label{font-family:'Baloo 2',sans-serif;font-weight:700;font-size:1.05rem;color:var(--ink);}
+  .variant-card .variant-age{font-size:.84rem;font-weight:700;color:var(--ink-faint);}
+  .variant-card .variant-price{font-family:'Baloo 2',sans-serif;font-weight:700;font-size:1.2rem;color:var(--magenta);margin-top:4px;}
+  .variant-detail{animation:variant-reveal .2s ease;}
+  @keyframes variant-reveal{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+  .variant-placeholder{color:var(--ink-faint);font-size:.92rem;margin:0 0 26px;}
 
   /* Shared panel look for steps 2-5 */
   .step-panel{
@@ -621,7 +626,7 @@
       </div>
       <div class="hero-stats">
         <div class="hero-stat"><b class="ticker" data-target="1000" data-suffix="+ m²">0 m²</b><span>de espacio al aire libre</span></div>
-        <div class="hero-stat"><b class="ticker" data-target="12">0</b><span>talleres para elegir</span></div>
+        <div class="hero-stat"><b class="ticker" data-target="8">0</b><span>talleres para elegir</span></div>
         <div class="hero-stat"><b class="ticker" data-target="100" data-prefix="+">0</b><span>inscritos por temporada</span></div>
       </div>
     </div>
@@ -1051,27 +1056,33 @@
   ];
 
   var TALLERES = [
-    {name:'Marinera Mayores', cls:'p3', cat:'expresion', active:true, age:'8 – 15 años', duration:'60 min', schedule:'Lun, Mié y Vie · 8:00 – 9:00 am', sessions:12, price:200, photo:'assets/taller-marinera.jpg',
+    {name:'Marinera', cls:'p3', cat:'expresion', active:true, age:'8 – 15 años', duration:'60 min', schedule:'Lun, Mié y Vie · 8:00 – 9:00 am', sessions:12, price:200, photo:'assets/taller-marinera.jpg',
       desc:'Aprenden los pasos y el espíritu de la marinera peruana, ganando ritmo, postura y confianza en el escenario.',
       bullets:['Pasos básicos y avanzados de marinera','Trabajo de ritmo y postura','Muestra final para la familia']},
-    {name:'Modelaje Mayores', cls:'p5', cat:'expresion', active:true, age:'9 – 15 años', duration:'90 min', schedule:'Lun, Mié y Vie · 9:00 – 10:30 am', sessions:12, price:200, photo:'assets/taller-modelaje.jpg',
-      desc:'Trabajan postura, expresión corporal y seguridad escénica en pasarela, en un ambiente divertido y respetuoso.',
-      bullets:['Postura y caminata en pasarela','Expresión frente a cámara','Seguridad y confianza escénica']},
-    {name:'Modelaje Menores', cls:'p5', cat:'expresion', active:true, age:'5 – 8 años', duration:'60 min', schedule:'Lun, Mié y Vie · 10:30 – 11:30 am', sessions:12, price:180, photo:'assets/taller-modelaje.jpg',
-      desc:'Primeros pasos en pasarela: postura, coordinación y seguridad frente a los demás, de forma lúdica.',
-      bullets:['Postura y equilibrio','Juegos de coordinación','Primera muestra en pasarela']},
-    {name:'Danza Menores', cls:'p6', cat:'expresion', active:true, age:'5 – 8 años', duration:'60 min', schedule:'Lun, Mié y Vie · 9:30 – 10:30 am', sessions:12, price:180, photo:'assets/taller-baile-moderno.jpg',
-      desc:'Coreografías sencillas y divertidas para soltarse, moverse al ritmo de la música y trabajar en equipo.',
-      bullets:['Coreografía grupal','Calentamiento y ritmo','Presentación final']},
-    {name:'Danza Mayores', cls:'p6', cat:'expresion', active:true, age:'9 – 15 años', duration:'60 min', schedule:'Lun, Mié y Vie · 10:30 – 11:30 am', sessions:12, price:180, photo:'assets/taller-baile-moderno.jpg',
-      desc:'Coreografías dinámicas al ritmo de música actual, para ganar seguridad, condición física y trabajo en equipo.',
-      bullets:['Coreografía grupal','Técnica y ritmo','Presentación final']},
-    {name:'Estimulación Temprana 1 año', cls:'p1', cat:'desarrollo', active:true, age:'1 – 2 años', duration:'60 min', schedule:'Lun, Mié y Vie · 9:30 – 10:30 am', sessions:12, price:180, photo:'assets/taller-estimulacion.jpg', pos:'top',
+    {name:'Modelaje y Pasarela', cls:'p5', cat:'expresion', active:true, age:'5 – 15 años', schedule:'Lun, Mié y Vie', photo:'assets/taller-modelaje.jpg',
+      desc:'Trabajan postura, expresión corporal y seguridad escénica en pasarela, en un ambiente divertido y respetuoso — con el grupo adaptado a la edad de tu hij@.',
+      variants:[
+        {key:'menores', label:'Menores', age:'5 – 8 años', duration:'60 min', schedule:'Lun, Mié y Vie · 10:30 – 11:30 am', sessions:12, price:180,
+          bullets:['Postura y equilibrio','Juegos de coordinación','Primera muestra en pasarela']},
+        {key:'mayores', label:'Mayores', age:'9 – 15 años', duration:'90 min', schedule:'Lun, Mié y Vie · 9:00 – 10:30 am', sessions:12, price:200,
+          bullets:['Postura y caminata en pasarela','Expresión frente a cámara','Seguridad y confianza escénica']}
+      ]},
+    {name:'Danza', cls:'p6', cat:'expresion', active:true, age:'5 – 15 años', schedule:'Lun, Mié y Vie', photo:'assets/taller-baile-moderno.jpg',
+      desc:'Coreografías dinámicas al ritmo de música actual, para soltarse, moverse y trabajar en equipo — con el grupo adaptado a la edad de tu hij@.',
+      variants:[
+        {key:'menores', label:'Menores', age:'5 – 8 años', duration:'60 min', schedule:'Lun, Mié y Vie · 9:30 – 10:30 am', sessions:12, price:180,
+          bullets:['Coreografía grupal','Calentamiento y ritmo','Presentación final']},
+        {key:'mayores', label:'Mayores', age:'9 – 15 años', duration:'60 min', schedule:'Lun, Mié y Vie · 10:30 – 11:30 am', sessions:12, price:180,
+          bullets:['Coreografía grupal','Técnica y ritmo','Presentación final']}
+      ]},
+    {name:'Estimulación Temprana', cls:'p1', cat:'desarrollo', active:true, age:'1 – 3 años', schedule:'Lun, Mié y Vie', photo:'assets/taller-estimulacion.jpg', pos:'top',
       desc:'Un espacio sensorial para que los más pequeños exploren, se muevan y descubran el mundo jugando, acompañados por su cuidador.',
-      bullets:['Juego sensorial y motor','Música y estimulación temprana','Acompañado por mamá, papá o cuidador']},
-    {name:'Estimulación Temprana 2 años', cls:'p1', cat:'desarrollo', active:true, age:'2 – 3 años', duration:'60 min', schedule:'Lun, Mié y Vie · 10:30 – 11:30 am', sessions:12, price:180, photo:'assets/taller-estimulacion.jpg', pos:'top',
-      desc:'Actividades sensoriales y motoras pensadas para esta etapa, fomentando autonomía, lenguaje y socialización temprana.',
-      bullets:['Juego sensorial y motor','Lenguaje y socialización','Acompañado por mamá, papá o cuidador']},
+      variants:[
+        {key:'1ano', label:'1 año', age:'1 – 2 años', duration:'60 min', schedule:'Lun, Mié y Vie · 9:30 – 10:30 am', sessions:12, price:180,
+          bullets:['Juego sensorial y motor','Música y estimulación temprana','Acompañado por mamá, papá o cuidador']},
+        {key:'2anos', label:'2 años', age:'2 – 3 años', duration:'60 min', schedule:'Lun, Mié y Vie · 10:30 – 11:30 am', sessions:12, price:180,
+          bullets:['Juego sensorial y motor','Lenguaje y socialización','Acompañado por mamá, papá o cuidador']}
+      ]},
     {name:'Etiqueta', cls:'p2', cat:'aprendizaje', active:true, age:'5 – 15 años', duration:'60 min', schedule:'Lun, Mié y Vie · 11:30 am – 12:30 pm', sessions:12, price:150, photo:'assets/taller-etiqueta.jpg',
       desc:'Normas de cortesía, buenos modales y comportamiento social, aprendidos de forma práctica y amena, todas las edades juntas.',
       bullets:['Modales en la mesa','Saludo y presentación personal','Comportamiento en distintos entornos sociales']},
@@ -1081,20 +1092,47 @@
     {name:'Liderazgo y Coach', cls:'p7', cat:'aprendizaje', active:true, age:'8 – 15 años', duration:'60 min', schedule:'Mar y Jue · 10:00 – 11:00 am', sessions:8, price:130, photo:'assets/taller-liderazgo.jpg',
       desc:'Desarrollan habilidades de liderazgo, trabajo en equipo y toma de decisiones a través de dinámicas y retos.',
       bullets:['Dinámicas de trabajo en equipo','Toma de decisiones','Comunicación asertiva']},
-    {name:'Iniciación al Ajedrez', cls:'p4', cat:'aprendizaje', active:true, age:'5 – 8 años', duration:'60 min', schedule:'Mar y Jue · 9:00 – 10:00 am', sessions:8, price:130, photo:'assets/taller-ajedrez.jpg',
-      desc:'Primeros pasos en el ajedrez: el tablero, las piezas y las reglas básicas, de forma lúdica y sencilla.',
-      bullets:['El tablero y las piezas','Movimientos básicos','Primeras partidas guiadas']},
-    {name:'Ajedrez', cls:'p4', cat:'aprendizaje', active:true, age:'9 – 15 años', duration:'60 min', schedule:'Mar y Jue · 10:00 – 11:00 am', sessions:8, price:130, photo:'assets/taller-ajedrez.jpg',
-      desc:'Desarrollan pensamiento estratégico y paciencia mientras aprenden tácticas más avanzadas de ajedrez.',
-      bullets:['Movimientos y reglas avanzadas','Ejercicios de táctica','Partidas guiadas entre compañeros']}
+    {name:'Ajedrez', cls:'p4', cat:'aprendizaje', active:true, age:'5 – 15 años', schedule:'Mar y Jue', photo:'assets/taller-ajedrez.jpg',
+      desc:'Desarrollan pensamiento estratégico y paciencia jugando ajedrez — con el nivel adaptado a la edad de tu hij@.',
+      variants:[
+        {key:'iniciacion', label:'Iniciación', age:'5 – 8 años', duration:'60 min', schedule:'Mar y Jue · 9:00 – 10:00 am', sessions:8, price:130,
+          bullets:['El tablero y las piezas','Movimientos básicos','Primeras partidas guiadas']},
+        {key:'avanzado', label:'Avanzado', age:'9 – 15 años', duration:'60 min', schedule:'Mar y Jue · 10:00 – 11:00 am', sessions:8, price:130,
+          bullets:['Movimientos y reglas avanzadas','Ejercicios de táctica','Partidas guiadas entre compañeros']}
+      ]}
   ];
 
-  var selected = new Set();   // talleres elegidos
+  var selected = new Set();   // keys elegidos: nombre del taller, o "Nombre::variantKey"
   var activeCategory = 'todos';
   var fichaName = null;       // taller cuya ficha está abierta
+  var fichaVariant = null;    // variant.key elegido dentro de la ficha actual (si aplica)
 
   function findTaller(name){
     return TALLERES.filter(function(t){ return t.name === name; })[0] || null;
+  }
+
+  // Convierte un key del Set `selected` ("Nombre" o "Nombre::variantKey") en un objeto plano
+  // con todos los campos (precio, horario, edad, etc.) listos para usar en el resto del flujo.
+  function resolveEntry(key){
+    var parts = key.split('::');
+    var base = findTaller(parts[0]);
+    if(!base) return null;
+    if(base.variants){
+      var v = base.variants.filter(function(x){ return x.key === parts[1]; })[0];
+      if(!v) return null;
+      return {
+        key:key, name:base.name, displayName:base.name + ' · ' + v.label,
+        cls:base.cls, cat:base.cat, photo:base.photo, pos:base.pos,
+        age:v.age, duration:v.duration, schedule:v.schedule, sessions:v.sessions, price:v.price,
+        desc:base.desc, bullets:v.bullets
+      };
+    }
+    return {
+      key:base.name, name:base.name, displayName:base.name,
+      cls:base.cls, cat:base.cat, photo:base.photo, pos:base.pos,
+      age:base.age, duration:base.duration, schedule:base.schedule, sessions:base.sessions, price:base.price,
+      desc:base.desc, bullets:base.bullets
+    };
   }
 
   function fieldVal(id){
@@ -1102,9 +1140,9 @@
     return el ? el.value.trim() : '';
   }
 
-  function computeTotal(names){
-    return names.reduce(function(sum, name){
-      var t = findTaller(name);
+  function computeTotal(keys){
+    return keys.reduce(function(sum, key){
+      var t = resolveEntry(key);
       return sum + (t ? t.price : 0);
     }, 0);
   }
@@ -1157,7 +1195,12 @@
           '</span>' +
         '</div>';
       }
-      var isSelected = selected.has(t.name);
+      var isSelected = t.variants
+        ? Array.from(selected).some(function(k){ return k.indexOf(t.name + '::') === 0; })
+        : selected.has(t.name);
+      var priceLabel = t.variants
+        ? 'Desde S/' + Math.min.apply(null, t.variants.map(function(v){ return v.price; }))
+        : 'S/' + t.price;
       return '<button type="button" class="catalog-card ' + t.cls + (isSelected ? ' selected' : '') + '" data-taller="' + t.name + '">' +
         '<span class="catalog-card-photo">' +
           '<img src="' + t.photo + '" alt="' + t.name + '" loading="lazy"' + (t.pos ? ' style="object-position:center ' + t.pos + '"' : '') + '>' +
@@ -1167,7 +1210,7 @@
         '<span class="catalog-card-body">' +
           '<strong>' + t.name + '</strong>' +
           '<span class="meta">' + t.age + ' · ' + t.schedule + '</span>' +
-          '<span class="price-row"><b>S/' + t.price + '</b><span>Ver taller →</span></span>' +
+          '<span class="price-row"><b>' + priceLabel + '</b><span>Ver taller →</span></span>' +
         '</span>' +
       '</button>';
     }).join('');
@@ -1191,57 +1234,113 @@
     var t = findTaller(name);
     if(!t || !t.active) return;
     fichaName = name;
+    fichaVariant = null;
     renderFicha();
     showStep('ficha');
   }
 
-  function renderFicha(){
-    var t = findTaller(fichaName);
-    var box = document.getElementById('ficha-content');
-    if(!t || !box) return;
-    var catLabel = (CATEGORIES.filter(function(c){ return c.id === t.cat; })[0] || {}).label || '';
-    var alreadyAdded = selected.has(fichaName);
+  function fichaMetaHTML(t){
+    return '<div class="ficha-meta">' +
+      '<span class="ficha-meta-item"><svg viewBox="0 0 24 24" fill="none"><path d="M12 21s-7-4.5-7-10a7 7 0 0 1 14 0c0 5.5-7 10-7 10Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><circle cx="12" cy="10.5" r="2.4" stroke="currentColor" stroke-width="1.6"/></svg>' + t.age + '</span>' +
+      '<span class="ficha-meta-item"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8.5" stroke="currentColor" stroke-width="1.6"/><path d="M12 7.5V12l3 2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>' + t.schedule + '</span>' +
+      '<span class="ficha-meta-item"><svg viewBox="0 0 24 24" fill="none"><rect x="3.5" y="5" width="17" height="15" rx="2.5" stroke="currentColor" stroke-width="1.6"/><path d="M3.5 9.5h17M8 3v4M16 3v4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>' + t.sessions + ' sesiones al mes · ' + t.duration + '</span>' +
+      '<span class="ficha-meta-item"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3v18M7 7.5c0-1.9 2-3 5-3s5 1.1 5 2.4c0 3.4-10 1.4-10 5 0 1.6 2 2.6 5 2.6s5-1.1 5-2.6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>S/' + t.price + '</span>' +
+    '</div>';
+  }
 
-    box.className = t.cls;
-    box.innerHTML =
-      '<img class="ficha-photo" src="' + t.photo + '" alt="' + t.name + '"' + (t.pos ? ' style="object-position:center ' + t.pos + '"' : '') + '>' +
-      '<div class="ficha-head"><h2>' + t.name + '</h2><span class="ficha-tag">' + catLabel + '</span></div>' +
-      '<div class="ficha-meta">' +
-        '<span class="ficha-meta-item"><svg viewBox="0 0 24 24" fill="none"><path d="M12 21s-7-4.5-7-10a7 7 0 0 1 14 0c0 5.5-7 10-7 10Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><circle cx="12" cy="10.5" r="2.4" stroke="currentColor" stroke-width="1.6"/></svg>' + t.age + '</span>' +
-        '<span class="ficha-meta-item"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8.5" stroke="currentColor" stroke-width="1.6"/><path d="M12 7.5V12l3 2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>' + t.schedule + '</span>' +
-        '<span class="ficha-meta-item"><svg viewBox="0 0 24 24" fill="none"><rect x="3.5" y="5" width="17" height="15" rx="2.5" stroke="currentColor" stroke-width="1.6"/><path d="M3.5 9.5h17M8 3v4M16 3v4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>' + t.sessions + ' sesiones al mes · ' + t.duration + '</span>' +
-        '<span class="ficha-meta-item"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3v18M7 7.5c0-1.9 2-3 5-3s5 1.1 5 2.4c0 3.4-10 1.4-10 5 0 1.6 2 2.6 5 2.6s5-1.1 5-2.6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>S/' + t.price + '</span>' +
-      '</div>' +
-      '<p class="ficha-desc">' + t.desc + '</p>' +
-      '<p class="ficha-sub">¿Qué harán?</p>' +
-      '<ul class="ficha-bullets">' + t.bullets.map(function(b){
+  function fichaBulletsHTML(bullets){
+    return '<p class="ficha-sub">¿Qué harán?</p>' +
+      '<ul class="ficha-bullets">' + bullets.map(function(b){
         return '<li><svg viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4 10-10" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>' + b + '</li>';
-      }).join('') + '</ul>' +
-      '<button type="button" class="btn btn-primary" id="btn-add-ficha"' + (alreadyAdded ? ' disabled' : '') + '>' + (alreadyAdded ? 'Ya está en tu reserva ✓' : 'Añadir a mi reserva →') + '</button>';
+      }).join('') + '</ul>';
+  }
 
+  function fichaAddButtonHTML(key){
+    var alreadyAdded = selected.has(key);
+    return '<button type="button" class="btn btn-primary" id="btn-add-ficha"' + (alreadyAdded ? ' disabled' : '') + '>' + (alreadyAdded ? 'Ya está en tu reserva ✓' : 'Añadir a mi reserva →') + '</button>';
+  }
+
+  function bindFichaAddButton(key, toastLabel){
     var addBtn = document.getElementById('btn-add-ficha');
-    if(addBtn && !alreadyAdded){
+    if(addBtn && !selected.has(key)){
       addBtn.addEventListener('click', function(){
-        selected.add(fichaName);
-        if(window.oasisToast) window.oasisToast(fichaName + ' se añadió a tu reserva.');
+        selected.add(key);
+        if(window.oasisToast) window.oasisToast(toastLabel + ' se añadió a tu reserva.');
         renderCatalog();
         showStep('catalogo');
       });
     }
   }
 
+  function renderFicha(){
+    var base = findTaller(fichaName);
+    var box = document.getElementById('ficha-content');
+    if(!base || !box) return;
+    var catLabel = (CATEGORIES.filter(function(c){ return c.id === base.cat; })[0] || {}).label || '';
+    box.className = base.cls;
+
+    if(!base.variants){
+      var t = resolveEntry(base.name);
+      box.innerHTML =
+        '<img class="ficha-photo" src="' + t.photo + '" alt="' + t.name + '"' + (t.pos ? ' style="object-position:center ' + t.pos + '"' : '') + '>' +
+        '<div class="ficha-head"><h2>' + t.name + '</h2><span class="ficha-tag">' + catLabel + '</span></div>' +
+        fichaMetaHTML(t) +
+        '<p class="ficha-desc">' + t.desc + '</p>' +
+        fichaBulletsHTML(t.bullets) +
+        fichaAddButtonHTML(t.key);
+      bindFichaAddButton(t.key, t.displayName);
+      return;
+    }
+
+    // Taller con variantes (ej. Menores/Mayores): se elige primero, luego se revela el detalle.
+    var variantCardsHTML = base.variants.map(function(v){
+      var isActive = fichaVariant === v.key;
+      return '<button type="button" class="variant-card' + (isActive ? ' active' : '') + '" data-variant="' + v.key + '">' +
+        '<span class="variant-label">' + v.label + '</span>' +
+        '<span class="variant-age">' + v.age + '</span>' +
+        '<span class="variant-price">S/' + v.price + '</span>' +
+      '</button>';
+    }).join('');
+
+    var detailHTML = '<p class="variant-placeholder">Elige una opción para ver el horario y añadirla a tu reserva.</p>';
+    if(fichaVariant){
+      var key = base.name + '::' + fichaVariant;
+      var t2 = resolveEntry(key);
+      detailHTML = '<div class="variant-detail">' + fichaMetaHTML(t2) + fichaBulletsHTML(t2.bullets) + fichaAddButtonHTML(key) + '</div>';
+    }
+
+    box.innerHTML =
+      '<img class="ficha-photo" src="' + base.photo + '" alt="' + base.name + '"' + (base.pos ? ' style="object-position:center ' + base.pos + '"' : '') + '>' +
+      '<div class="ficha-head"><h2>' + base.name + '</h2><span class="ficha-tag">' + catLabel + '</span></div>' +
+      '<p class="ficha-desc">' + base.desc + '</p>' +
+      '<p class="variant-intro">¿Qué grupo corresponde?</p>' +
+      '<div class="variant-options">' + variantCardsHTML + '</div>' +
+      detailHTML;
+
+    Array.prototype.slice.call(box.querySelectorAll('.variant-card')).forEach(function(card){
+      card.addEventListener('click', function(){
+        fichaVariant = card.getAttribute('data-variant');
+        renderFicha();
+      });
+    });
+    if(fichaVariant){
+      bindFichaAddButton(base.name + '::' + fichaVariant, base.name + ' · ' + (base.variants.filter(function(v){ return v.key === fichaVariant; })[0] || {}).label);
+    }
+  }
+
   // ---------- Recibo reutilizable (Mi reserva / Datos / Confirmación) ----------
-  function buildReceiptRows(names, removable){
-    if(names.length === 0) return '<p class="receipt-empty">Toca uno o más talleres del catálogo para armar tu reserva.</p>';
-    return names.map(function(name){
-      var t = findTaller(name);
+  function buildReceiptRows(keys, removable){
+    if(keys.length === 0) return '<p class="receipt-empty">Toca uno o más talleres del catálogo para armar tu reserva.</p>';
+    return keys.map(function(key){
+      var t = resolveEntry(key);
       var sub = t ? (t.schedule + ' · S/' + t.price) : '';
       var photo = t ? t.photo : '';
       var photoPos = t && t.pos ? ' style="object-position:center ' + t.pos + '"' : '';
+      var label = t ? t.displayName : key;
       return '<div class="receipt-row">' +
         (photo ? '<img class="receipt-thumb" src="' + photo + '" alt=""' + photoPos + '>' : '') +
-        '<div class="receipt-row-info"><strong>' + name + '</strong><span>' + sub + '</span></div>' +
-        (removable ? '<button type="button" class="receipt-remove" data-remove="' + name + '" aria-label="Quitar ' + name + '"><svg viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6 6 18" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg></button>' : '') +
+        '<div class="receipt-row-info"><strong>' + label + '</strong><span>' + sub + '</span></div>' +
+        (removable ? '<button type="button" class="receipt-remove" data-remove="' + key + '" aria-label="Quitar ' + label + '"><svg viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6 6 18" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg></button>' : '') +
       '</div>';
     }).join('');
   }
@@ -1296,8 +1395,9 @@
     var total = computeTotal(names);
     var deposit = computeDeposit(total);
     var childName = fieldVal('f-child-name') || '(sin nombre)';
+    var labels = names.map(function(k){ var t = resolveEntry(k); return t ? t.displayName : k; });
     var msg = 'Hola! Quiero confirmar el pago de la seña (S/' + deposit + ') de la reserva de ' + childName +
-      ' para: ' + names.join(', ') + '. Total: S/' + total + '.';
+      ' para: ' + labels.join(', ') + '. Total: S/' + total + '.';
     link.href = 'https://wa.me/' + WHATSAPP_NUMBER + '?text=' + encodeURIComponent(msg);
   }
 
@@ -1357,11 +1457,11 @@
       body: JSON.stringify(payload)
     }).then(function(res){
       if(!res.ok) throw new Error('reservations insert failed: ' + res.status);
-      var itemRows = names.map(function(name){
-        var t = findTaller(name);
+      var itemRows = names.map(function(key){
+        var t = resolveEntry(key);
         return {
           reservation_id: reservationId,
-          taller: name,
+          taller: t ? t.displayName : key,
           horario: t ? t.schedule : '',
           price: t ? t.price : 0
         };
