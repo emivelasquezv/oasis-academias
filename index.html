@@ -101,7 +101,7 @@
   }
   .btn-primary{background:var(--magenta);color:#fff;box-shadow:0 14px 28px -12px rgba(230,28,120,.55);}
   .btn-primary:hover{transform:translateY(-2px);box-shadow:0 18px 34px -12px rgba(230,28,120,.65);}
-  .btn-ghost{background:transparent;color:var(--surface);border:2px solid rgba(255,255,255,.75);}
+  .btn-ghost{background:transparent;color:#fff;border:2px solid rgba(255,255,255,.75);}
   .btn-ghost:hover{background:rgba(255,255,255,.14);}
   .btn-outline{background:transparent;color:var(--blue);border:2px solid var(--blue);}
   .btn-outline:hover{background:var(--blue);color:#fff;}
@@ -250,6 +250,25 @@
   .p5{--c1:#FFE7E2;--c2:#FFD2C8;--c3:#C4432E;}
   .p6{--c1:#F1E9FF;--c2:#E2D3FF;--c3:#6B3FA0;}
   .p7{--c1:#E0F5F5;--c2:#C6EBEA;--c3:#0E7A7A;}
+  /* Tintes por categoría para modo oscuro: --c1 es un fondo claro fijo (se usa en fichas/etiquetas),
+     así que en oscuro pasa a un tinte oscuro; p1-p3 heredan --c3 claro automáticamente (var(--blue-deep) etc.),
+     p4-p7 usan un color fijo y necesitan su propia versión clara para seguir siendo legibles. */
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]) .p1{--c1:#16233D;}
+    :root:not([data-theme="light"]) .p2{--c1:#2A1626;}
+    :root:not([data-theme="light"]) .p3{--c1:#122A1C;}
+    :root:not([data-theme="light"]) .p4{--c1:#2E2210;--c3:#F0B84D;}
+    :root:not([data-theme="light"]) .p5{--c1:#2E1A14;--c3:#FF9478;}
+    :root:not([data-theme="light"]) .p6{--c1:#231A33;--c3:#B99AE8;}
+    :root:not([data-theme="light"]) .p7{--c1:#112727;--c3:#5FD1D1;}
+  }
+  :root[data-theme="dark"] .p1{--c1:#16233D;}
+  :root[data-theme="dark"] .p2{--c1:#2A1626;}
+  :root[data-theme="dark"] .p3{--c1:#122A1C;}
+  :root[data-theme="dark"] .p4{--c1:#2E2210;--c3:#F0B84D;}
+  :root[data-theme="dark"] .p5{--c1:#2E1A14;--c3:#FF9478;}
+  :root[data-theme="dark"] .p6{--c1:#231A33;--c3:#B99AE8;}
+  :root[data-theme="dark"] .p7{--c1:#112727;--c3:#5FD1D1;}
 
   /* Step indicator (4 dots: Catálogo / Mi reserva / Datos / Pago) */
   .step-indicator{display:flex;align-items:center;gap:8px;margin-bottom:22px;}
@@ -287,6 +306,10 @@
     padding:8px 16px;cursor:pointer;transition:background .15s ease,color .15s ease,border-color .15s ease;
   }
   .pill.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+  /* En modo oscuro --ink pasa a ser claro (texto), así que aquí se fija a magenta en vez de dejar que herede var(--ink) */
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]) .pill.active{background:var(--magenta);border-color:var(--magenta);}
+  }
   :root[data-theme="dark"] .pill.active{background:var(--magenta);border-color:var(--magenta);}
 
   .catalog-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
@@ -326,7 +349,7 @@
   .catalog-footer .btn{flex:none;}
   .catalog-card.inactive{cursor:default;}
   .catalog-card.inactive .catalog-card-photo img{filter:grayscale(.6);opacity:.75;}
-  .catalog-card-tag.coming-soon{background:var(--ink);color:#fff;}
+  .catalog-card-tag.coming-soon{background:#1C2B3D;color:#fff;}
   .coming-soon-text{color:var(--ink-faint);font-weight:700;font-size:.84rem;}
 
   /* Step 1b — Ficha del taller */
@@ -426,7 +449,7 @@
   /* Step 5 — Confirmación */
   .confirm-wrap{max-width:560px;margin:0 auto;text-align:center;padding:clamp(20px,4vw,40px) 0;position:relative;}
   .confirm-check{
-    width:72px;height:72px;border-radius:50%;background:#EAF6EE;color:var(--leaf-deep);
+    width:72px;height:72px;border-radius:50%;background:#EAF6EE;color:#2B6B42;
     display:flex;align-items:center;justify-content:center;margin:0 auto 20px;
   }
   .confirm-check svg{width:36px;height:36px;}
@@ -572,8 +595,12 @@
   .policy-text a{color:var(--blue);font-weight:700;}
 
   /* ---------- Footer ---------- */
-  footer{background:var(--ink);color:rgba(255,255,255,.8);padding-block:44px;}
-  :root[data-theme="dark"] footer, @media (prefers-color-scheme:dark){footer{background:#070D17;}}
+  /* Fondo fijo (no usa var(--ink): esa variable cambia de oscuro a claro en modo oscuro, y volvería el fondo claro) */
+  footer{background:#1C2B3D;color:rgba(255,255,255,.8);padding-block:44px;}
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]) footer{background:#070D17;}
+  }
+  :root[data-theme="dark"] footer{background:#070D17;}
   .foot-wrap{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:18px;}
   .foot-brand{display:flex;align-items:center;gap:10px;font-family:'Baloo 2',sans-serif;font-weight:700;font-size:1.1rem;color:#fff;}
   .foot-links{display:flex;gap:20px;list-style:none;margin:0;padding:0;font-size:.9rem;font-weight:700;}
